@@ -1,0 +1,15 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+select{
+    text-transform: none;
+    padding: 4px;
+    margin-left: 10px;
+    background-color: cadetblue;
+    color: white;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+}

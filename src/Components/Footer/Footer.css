@@ -1,0 +1,19 @@
+.footer-container{
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    z-index: 50;
+    bottom: 0;
+    height: 50px;
+}
+
+.footer-container.light{
+    background-color: #aed3d0; 
+    color: white;  /* Text color for dark theme */
+}
+.footer-container.dark{
+    background-color: #333333;
+ 
+    color: white;  
+}

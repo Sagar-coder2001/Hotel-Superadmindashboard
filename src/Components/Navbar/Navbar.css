@@ -1,0 +1,45 @@
+.navbar{
+    width: 100%;
+    height: 60px;
+    background-color: #aed3d0; 
+    color: rgb(255, 255, 255);
+    padding: 0px 10px;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+.leftnavbar a{
+    text-decoration: none;
+    margin-left: 30px;
+    font-size: 20px;
+
+}
+.rightnavbar i{
+    margin: 0px 8px;
+    font-size: 18px;
+}
+/* Default light theme */
+body[data-theme="light"] {
+    background-color: white;
+    color: black;
+}
+body[data-theme="dark"] {
+    background-color: #052022;
+    color: white;
+}
+
+/* Navbar specific styles */
+.navbar.light {
+    background-color: #ffffff;
+    color: black;
+}
+
+.navbar.dark {
+    background-color: #333333;
+    color: white;
+}
+
+.navbar .rightnavbar i {
+    color: inherit; /* This will ensure the icons also change color based on the theme */
+}
+
