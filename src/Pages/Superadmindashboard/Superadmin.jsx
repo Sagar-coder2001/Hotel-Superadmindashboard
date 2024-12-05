@@ -196,6 +196,7 @@ const Superadmin = () => {
     <Layout>
       <Admindashboard />
       <div className="dashboard-container mt-5">
+
         {delpopbox && (
           <div className="delpopup">
             <div className="popup-content">
@@ -205,6 +206,7 @@ const Superadmin = () => {
             </div>
           </div>
         )}
+        
         {
           useraddloading && (
             <>

@@ -27,14 +27,12 @@ useEffect(() => {
         console.log(data);
         if (data.Status === true) {
         }
-
     } catch (err) {
         console.log(err);
     }
 };
 submitDetails();
 },[])
-
 
   return (
     <div>
@@ -44,7 +42,6 @@ submitDetails();
             Main Dashboard
         </div>
         </Layout>
-     
     </div>
   )
 }

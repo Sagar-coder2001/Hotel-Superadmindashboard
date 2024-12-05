@@ -63,7 +63,7 @@ const LoginForm = () => {
             if (data.Status === true) {
                 localStorage.setItem('isLoggedIn', 'true');
                 dispatch(userlogin());
-                navigate('/Admindashboard', { state: { tokenid: data.Token, username: userdetails.username } });
+                navigate('/Maindashboard', { state: { tokenid: data.Token, username: userdetails.username}});
             }
 
         } catch (err) {
