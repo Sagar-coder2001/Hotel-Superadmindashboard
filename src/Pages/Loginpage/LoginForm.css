@@ -39,6 +39,11 @@
 
 }
 
+.card-container form button:hover {
+    width: 100%;
+    background-color: #aed3d0; 
+    color: black;
+}
 .loginnavbar {
     display: flex;
     justify-content: space-between;
@@ -64,4 +69,11 @@
 .middle {
     font-size: 18px;
     color: white;
+}
+.showerr{
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 4px;
+    z-index: 1000;
 }

@@ -24,7 +24,9 @@ const Admindashboard = () => {
   }
 
   const opentable = () => {
-    navigate('/Table_dashboard');
+    navigate('/Maindashboard', {
+      state: { tokenid: token, username: user }
+    });
   }
 
   // useEffect(() => {
@@ -55,10 +57,10 @@ const Admindashboard = () => {
             <div className="middle">
               <a href="" style={{ textAlign: 'center' }}>Company</a>
               <ul>
-                <li><a onClick={(e) => {openhoteldashboard(e) }}>USer Manage</a></li>
+                 <li><a  onClick={(e) => {opentable(e) }}>Hotel superdashboard</a></li>
+                <li><a onClick={(e) => {openhoteldashboard(e) }}>User Manage</a></li>
                 <li><a onClick={(e) => {openemployeedashboard(e) }}>Hotel Manage</a></li>
-                {/* <li><a onClick={(e) => {opentable(e)}}>Table Managment</a></li>
-                <li><a >Home</a></li> */}
+                <li><a >Home</a></li> 
                 <div style={{ marginTop: '150px' }}>
                   <li><a>Setting</a></li>
                   <li><a onClick={handlelogout} >Logout</a></li>

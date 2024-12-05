@@ -14,6 +14,7 @@ const LoginForm = () => {
     const dispatch = useDispatch();
 
     const [isDarkTheme, setIsDarkTheme] = useState(false);
+    const [showerror, setShowerr] = useState(false);
 
 
     useEffect(() => {
@@ -55,6 +56,10 @@ const LoginForm = () => {
             const data = await response.json();
             console.log(data);
 
+            if (data.Status === false) {
+                setShowerr(true);
+            }
+
             if (data.Status === true) {
                 localStorage.setItem('isLoggedIn', 'true');
                 dispatch(userlogin());
@@ -69,9 +74,21 @@ const LoginForm = () => {
     return (
         <div>
             <Layout>
-                {/* Apply dynamic class for background color based on the theme */}
+
                 <div className={`login-container ${isDarkTheme ? 'dark' : 'light'}`}>
                     <div className="card-container">
+                    {
+                                showerror ? (
+                                    <>
+                                        <div>
+                                            <div className="showerror text-center">
+                                                <strong className='text-danger fs-2'>Error! </strong><span style={{ fontSize: '18px' }}>Invalid Username and Password</span>
+                                                <i class="fa-solid fa-xmark"onClick={() => setShowerr(false)} style={{marginLeft:'15px', fontSize:'25px', color:"red"}}></i> 
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : ''
+                            }
                         <form>
                             <h4 className="text-center fs-2">Superadmin Login</h4>
                             <div className="mb-3">

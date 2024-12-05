@@ -1,0 +1,70 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+.delpopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    color: black;
+}
+
+.popup-content button {
+    margin: 5px;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+}
+
+.popup-content .okbtn {
+    background-color: green;
+    color: white;
+    padding: 6px 8px;
+}
+
+.popup-content button:last-child {
+    background-color: red;
+    color: white;
+}
+
+.loader-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+}
+
+
+.user-details-card .light {
+    background-color: #ffffff;
+    color: white;
+    /* Text color for dark theme */
+}
+
+.user-details-card.dark {
+    background-color: #000000;
+
+    color: white;
+}
