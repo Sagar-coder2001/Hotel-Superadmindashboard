@@ -4,6 +4,7 @@ import '../Dashboard/Admindashboard.css';
 import '../Superadmindashboard/superadmin.css'
 import Layout from '../../Components/Layout/Layout';
 import Admindashboard from '../Dashboard/Admindashboard';
+import { useSelector } from 'react-redux';
 
 
 const Superadmin = () => {
@@ -28,6 +29,14 @@ const Superadmin = () => {
 
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const bgcolor = useSelector((state) => state.theme.navbar)
+  const textcolor = useSelector((state) => state.theme.textcolor);
+  const modalbg = useSelector((state) => state.theme.modal);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5);
+
 
   const navigate = useNavigate();
 
@@ -186,17 +195,36 @@ const Superadmin = () => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
-  const filtered = hotels.filter((hotel) =>
-    hotel.Hotel_Name.toLowerCase().includes(query)
-  );
-  setFilteredHotels(filtered);
-};
+    const filtered = hotels.filter((hotel) =>
+      hotel.Hotel_Name.toLowerCase().includes(query)
+    );
+    setFilteredHotels(filtered);
+  };
+
+  // add pagination login here 
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = Array.isArray(allUserdata) ? allUserdata.slice(indexOfFirstUser, indexOfLastUser) : [];
+
+  const totalPages = Math.ceil(allUserdata/ usersPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <Layout>
       <Admindashboard />
       <div className="dashboard-container mt-5">
-
         {delpopbox && (
           <div className="delpopup">
             <div className="popup-content">
@@ -206,7 +234,7 @@ const Superadmin = () => {
             </div>
           </div>
         )}
-        
+
         {
           useraddloading && (
             <>
@@ -218,49 +246,56 @@ const Superadmin = () => {
             </>
           )
         }
+        
         <div className="employee-manage">
           <div className="addbtn" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button className="mt-4" onClick={addEmpUser}>Add User</button>
             <div className="row mt-4">
-            <input type="text"
-              placeholder='Search Hotels' 
-              style={{marginBottom:'10px', boxShadow:'0px 0px 5px solid', outline:'none', padding:'4px'}}
-              onChange={handleSearchChange}
-              className='form-control'
-              />
+             
               <label htmlFor="role" className="col-5 col-form-label text-start"><strong>Hotel-Id</strong></label>
               <div className="col-7">
-              <div>
-              <select
-                  className="form-control"
-                  value={selectedHotel_id}
-                  onChange={(e) => {
-                    const newSelectedValue = e.target.value;
-                    setSelectedHotel_Id(newSelectedValue);
-                    fetchData(newSelectedValue); 
-                  }}
-                >
-                  {loading ? (
-                    <option>Loading...</option>
-                  ) : (
-                    filteredHotels.length > 0 ? (
-                      filteredHotels.map((hotel, index) => (
-                        <option key={index} value={hotel.Hotel_ID}>
-                          {hotel.Hotel_Name}
-                        </option>
-                      ))
+                <div>
+                <input type="text"
+                              placeholder='Search Hotels'
+                              style={{ marginBottom: '10px', boxShadow: '0px 0px 5px solid', outline: 'none', padding: '4px' }}
+                              onChange={handleSearchChange}
+                              className='form-control'
+                            />
+                  <select
+                    className="form-control"
+                    value={selectedHotel_id}
+                    onChange={(e) => {
+                      const newSelectedValue = e.target.value;
+                      setSelectedHotel_Id(newSelectedValue);
+                      fetchData(newSelectedValue);
+                    }}
+                  >
+                 
+                    
+                    {loading ? (
+                      <option>Loading...</option>
                     ) : (
-                      <option>No hotels found</option>
-                    )
-                  )}
-                </select>
+                      filteredHotels.length ? (
+                        
+                        filteredHotels.map((hotel, index) => (
+                          <>
+                          <option key={index} value={hotel.Hotel_ID}>
+                            {hotel.Hotel_Name}
+                          </option>
+                          </>
+                        ))
+                      ) : (
+                        <option>No hotels found</option>
+                      )
+                    )}
+                  </select>
+                </div>
               </div>
-            </div>
             </div>
           </div>
           {/* Modal for Adding User */}
           {openModal && (
-            <div className="user-details-card text-center">
+            <div className="user-details-card text-center" style={{backgroundColor : modalbg, color:textcolor}}>
               <form>
                 <h3>superadmin</h3>
                 <button
@@ -378,7 +413,7 @@ const Superadmin = () => {
             <div className="table-container">
               <table className="custom-table">
                 <thead>
-                  <tr style={{ backgroundColor: 'black', color: 'white' }}>
+                  <tr style={{ backgroundColor: bgcolor, color: textcolor, height:'60px' }}>
                     <th style={{ padding: '10px' }}>Sr. No</th>
                     <th>Username</th>
                     <th>Role</th>
@@ -388,13 +423,13 @@ const Superadmin = () => {
                 <tbody>
                   {loadingUsers ? (
                     <tr>
-                      <td colSpan="4" style={{textAlign: 'center'}}>
+                      <td colSpan="4" style={{ textAlign: 'center' }}>
                         Loading Users...
                       </td>
                     </tr>
-                  ) : allUserdata ? (
-                    allUserdata.map((emp, index) => (
-                      <tr key={index} style={{ cursor: 'pointer' }}>
+                  ) : currentUsers.length > 0 ? (
+                    currentUsers.map((emp, index) => (
+                      <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{emp.Username}</td>
                         <td>{emp.Role}</td>
@@ -419,6 +454,18 @@ const Superadmin = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+          {/* Pagination Controls */}
+          <div className="pagination">
+            <button onClick={handlePrevPage} className='btn btn-info' disabled={currentPage === 1}>
+              Previous
+            </button>
+            <span style={{margin:'8px'}}>
+              {currentPage}
+            </span>
+            <button onClick={handleNextPage} className='btn btn-info' disabled={currentPage === totalPages}>
+              Next
+            </button>
           </div>
         </div>
       </div>

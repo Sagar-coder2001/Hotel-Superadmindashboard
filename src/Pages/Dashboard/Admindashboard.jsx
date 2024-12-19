@@ -3,6 +3,7 @@ import './Admindashboard.css';
 import { Navigate, useLocation } from 'react-router-dom';
 import Layout from '../../Components/Layout/Layout';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 const Admindashboard = () => {
@@ -12,6 +13,8 @@ const Admindashboard = () => {
   const [user, setUsername] = useState(username || '');
   const [openmoadl, setOpenModal] = useState(false);
   const navigate = useNavigate();
+
+  const bgcolor = useSelector((state) => state.theme.value);
 
   const handlelogout = () => {
     localStorage.removeItem('isLoggedIn',);

@@ -3,9 +3,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-
-
-
 .delpopup {
     position: fixed;
     top: 0;
@@ -18,7 +15,6 @@
     align-items: center;
     z-index: 9999;
 }
-
 .popup-content {
     background-color: white;
     padding: 20px;
