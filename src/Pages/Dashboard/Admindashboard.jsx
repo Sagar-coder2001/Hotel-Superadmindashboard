@@ -27,21 +27,15 @@ const Admindashboard = () => {
   }
 
   const opentable = () => {
-    navigate('/Maindashboard', {
-      state: { tokenid: token, username: user }
-    });
+    navigate('/Maindashboard');
   }
   
   const openhoteldashboard = () => {
-    navigate('/Superadmin', {
-      state: { tokenid: token, username: user }
-    });
+    navigate('/Superadmin');
   }
 
   const openemployeedashboard = () => {
-    navigate('/Usermanage', {
-      state: { tokenid: token, username: user }
-    });
+    navigate('/Usermanage');
   }
  
   return (

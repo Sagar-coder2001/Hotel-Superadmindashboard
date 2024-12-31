@@ -8,10 +8,10 @@ import { useSelector } from 'react-redux';
 
 
 const Superadmin = () => {
-  const location = useLocation();
-  const { tokenid, username } = location.state || {};
-  const [token, setToken] = useState(tokenid || '');
-  const [user, setUsername] = useState(username || '');
+  // const location = useLocation();
+  // const { tokenid, username } = location.state || {};
+  // const [token, setToken] = useState(tokenid || '');
+  // const [user, setUsername] = useState(username || '');
   const [openModal, setOpenModal] = useState(false);
   const [newuser, setNewuser] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +36,8 @@ const Superadmin = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
+  const { isLoggedIn, token, username } = useSelector((state) => state.loggedin);
+
 
 
   const navigate = useNavigate();
@@ -50,7 +52,7 @@ const Superadmin = () => {
       e.preventDefault();
       setUseraddloading(true);
       const formData = new FormData();
-      formData.append('username', user);
+      formData.append('username', username);
       formData.append('token', token);
       formData.append('new_user', newuser);
       formData.append('password', password);
@@ -68,6 +70,7 @@ const Superadmin = () => {
         const data = await response.json();
         if (data.Status === true) {
           setUseraddloading(false);
+          window.location.reload();
         }
 
         if (data.Status === false) setUserExist(true);
@@ -86,7 +89,7 @@ const Superadmin = () => {
   const fetchData = async (hotel_id) => {
     setLoadingUsers(true);
     const formData = new FormData();
-    formData.append('username', user);
+    formData.append('username', username);
     formData.append('token', token);
     formData.append('hotel_id', hotel_id);
 
@@ -135,8 +138,9 @@ const Superadmin = () => {
   };
 
   const userlogout = async (delete_user) => {
+    setUseraddloading(true)
     const formData = new FormData();
-    formData.append('username', user);
+    formData.append('username', username);
     formData.append('token', token);
     formData.append('delete_user', delete_user);
     formData.append('hotel_id', selectedHotel_id);
@@ -151,13 +155,18 @@ const Superadmin = () => {
 
       const data = await response.json();
       console.log('User removed successfully:', data);
+      if(data.Status === true){
+        window.location.reload();
+      }
       fetchData(selectedHotel_id);
     } catch (error) {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
     }
+    finally{
+      setUseraddloading(false)
+    }
   };
-
 
   const addEmpUser = () => {
     setOpenModal(true);
@@ -165,9 +174,9 @@ const Superadmin = () => {
 
   useEffect(() => {
     const fetchHotels = async () => {
-      if (user && token) {
+      if (username && token) {
         const formData = new FormData();
-        formData.append('username', user);
+        formData.append('username', username);
         formData.append('token', token);
 
         try {
@@ -189,7 +198,7 @@ const Superadmin = () => {
     };
 
     fetchHotels();
-  }, [user, token]);
+  }, [username, token]);
 
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
@@ -238,7 +247,7 @@ const Superadmin = () => {
         {
           useraddloading && (
             <>
-              <div className="loader-overlay">
+              <div className="loader-overlay delpopup">
                 <div class="spinner-border text-primary" role="status">
                   <span class="sr-only">Loading...</span>
                 </div>

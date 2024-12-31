@@ -61,14 +61,23 @@ const LoginForm = () => {
             }
 
             if (data.Status === true) {
-                localStorage.setItem('isLoggedIn', 'true');
-                dispatch(userlogin());
+                dispatch(userlogin({
+                    token: data.Token,
+                    username: userdetails.username,
+                    password : userdetails.password,
+          
+                  }));
                 navigate('/Maindashboard', { state: { tokenid: data.Token, username: userdetails.username}});
             }
 
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const togglePass = (id) => {
+        const passwordInput = document.getElementById(id);
+        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
     };
 
     return (
@@ -102,7 +111,7 @@ const LoginForm = () => {
                                     name="username"
                                 />
                             </div>
-                            <div className="mb-3">
+                            <div className="mb-3" style={{position:'relative'}}>
                                 <label htmlFor="password" className="form-label">Password</label>
                                 <input
                                     type="password"
@@ -112,6 +121,7 @@ const LoginForm = () => {
                                     name="password"
                                     id="password"
                                 />
+                                <i class="fa-solid fa-eye" style={{position: 'absolute', cursor : 'pointer', top:'40px', right:'10px'}} onClick={() => {togglePass('password')}}></i>
                             </div>
                             <div className="mb-3 form-check">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />

@@ -14,10 +14,10 @@ const Usermanage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hotelsPerPage] = useState(3); 
 
-  const location = useLocation();
-  const { tokenid, username } = location.state || {};
-  const [token, setToken] = useState(tokenid || '');
-  const [user, setUsername] = useState(username || '');
+  // const location = useLocation();
+  // const { tokenid, username } = location.state || {};
+  // const [token, setToken] = useState(tokenid || '');
+  // const [user, setUsername] = useState(username || '');
   const [openmodel, setOpenModal] = useState(false);
   const [hotelname, setHotelname] = useState('')
   const [hotelcontact, setHotelContact] = useState('');
@@ -27,17 +27,22 @@ const Usermanage = () => {
   const [openadd, setopenadd] = useState(false)
   const [accountnumber, setaccountnumber] = useState(null)
   const [ifsccode, setifsccodenumber] = useState(null);
+  const [useraddloading , setUseraddloading] = useState(false)
 
   const bgcolor = useSelector((state) => state.theme.navbar)
   const textcolor = useSelector((state) => state.theme.textcolor);
   const modalbg = useSelector((state) => state.theme.modal)
 
 
+  const { isLoggedIn, token, username } = useSelector((state) => state.loggedin);
+
+
+
 
   useEffect(() => {
-    if (user && token) {
+    if (username && token) {
       const formData = new FormData();
-      formData.append('username', user);
+      formData.append('username', username);
       formData.append('token', token);
       fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
         method: 'POST',
@@ -55,13 +60,14 @@ const Usermanage = () => {
         .finally(() => {
         });
     }
-  }, [user, token]);
+  }, [username, token]);
 
   // Handle row click to open the modal and set the selected hotel data
   const openHotelpopup = (hotel) => {
     // e.stoppropogation();
     setSelectedHotel(hotel);
     setModalOpen(true); // Open the modal
+    setOpenModal(false);
   };
 
   // Close the modal
@@ -90,9 +96,10 @@ const Usermanage = () => {
       setCurrentPage(currentPage + 1);
     }
   };
-
+  
   const addEmpUser = () => {
     setOpenModal(true);
+    setModalOpen(false);
   };
 
 
@@ -104,10 +111,11 @@ const Usermanage = () => {
       return false;
     } else {
       // setshowerr(false);
+      setUseraddloading(true)
       e.preventDefault();
       // setUseraddloading(true);
       const formData = new FormData();
-      formData.append('username', user);
+      formData.append('username', username);
       formData.append('token', token);
       formData.append('hotel_name', hotelname);
       formData.append('hotel_contact', hotelcontact);
@@ -121,7 +129,7 @@ const Usermanage = () => {
         const data = await response.json();
         if (data.Status === true) {
           setopenadd(true);
-
+          window.location.reload();
         }
         if (data.Status === false);
         console.log(data);
@@ -131,6 +139,9 @@ const Usermanage = () => {
       } catch (error) {
         console.error('Error submitting data:', error);
         alert('Error: ' + error.message);
+      }
+      finally{
+        setUseraddloading(false)
       }
     }
   };
@@ -162,8 +173,9 @@ const Usermanage = () => {
 
 
   const userlogout = async (confirmdel) => {
+    setUseraddloading(true)
     const formData = new FormData();
-    formData.append('username', user);
+    formData.append('username', username);
     formData.append('token', token);
     formData.append('hotel_id', confirmdel);
 
@@ -176,6 +188,9 @@ const Usermanage = () => {
       if (!response.ok) throw new Error('Failed to delete the user');
 
       const data = await response.json();
+      if(data.Status === true){
+        window.location.reload();
+      }
       console.log('User removed successfully:', data);
       setHotels(prevHotels => prevHotels.filter(hotel => hotel.Hotel_ID !== confirmdel));
 
@@ -183,17 +198,22 @@ const Usermanage = () => {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
     }
+    finally{
+      setUseraddloading(false)
+    }
   };
 
 
   // add Details of the user 
   const addDetails = async (e) => {
+ 
     e.preventDefault();
     // Validate the inputs to ensure no empty values
     if (!accountnumber || !ifsccode) {
-      alert('Please fill in all fields before submitting.');
+      setshowerr(true);
       return; // Prevent submission if any field is empty
     }
+    setUseraddloading(true);
 
     const formData = new FormData();
     formData.append('username', user);
@@ -227,11 +247,15 @@ const Usermanage = () => {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
     }
+    finally{
+      setUseraddloading(false)
+    }
   };
   const RemoveDetails = async (e) => {
+    setUseraddloading(true);
     e.preventDefault();
     const formData = new FormData();
-    formData.append('username', user);
+    formData.append('username', username);
     formData.append('token', token);
     formData.append('hotel_id', selectedHotel.Hotel_ID);
 
@@ -259,6 +283,9 @@ const Usermanage = () => {
     } catch (error) {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
+    }
+    finally{
+      setUseraddloading(false)
     }
   };
 
@@ -289,6 +316,19 @@ const Usermanage = () => {
                 </>
               )
             }
+
+{
+          useraddloading && (
+            <>
+              <div className="loader-overlay delpopup">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </>
+          )
+        }
+
             <div className="addbtn">
               <button className="mt-4 " onClick={addEmpUser}>Add User</button>
             </div>
@@ -460,7 +500,7 @@ const Usermanage = () => {
               <form>
                 <div className="form-group">
                   <label><strong>Hotel Name:</strong></label>
-                  <input type="text" value={selectedHotel.Hotel_Name} readOnly style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }} />
+                  <input type="text" value={selectedHotel.Hotel_Name} readOnly />
                 </div>
                 <div className="form-group">
                   <label><strong>Hotel ID:</strong></label>
@@ -487,7 +527,11 @@ const Usermanage = () => {
                     onChange={(e) => setaccountnumber(e.target.value)} // Allow user to input if editable
                     style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }}
                   />
+                   {
+                    showerr ? <div className='text-danger'>Error Invalid Account Number</div> : ''
+                  }
                 </div>
+              
 
                 <div className="form-group">
                   <label><strong>IFSC Code:</strong></label>
@@ -498,6 +542,9 @@ const Usermanage = () => {
                     onChange={(e) => setifsccodenumber(e.target.value)} // Allow user to input if editable
                     style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }}
                   />
+                    {
+                    showerr ? <div className='text-danger'>Error Invalid IFSC Number</div> : ''
+                  }
                 </div>
 
                 <div className="form-group addbtn text-center">
