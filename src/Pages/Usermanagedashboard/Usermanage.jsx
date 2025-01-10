@@ -4,6 +4,7 @@ import Admindashboard from '../Dashboard/Admindashboard';
 import '../Usermanagedashboard/Usermanage.css';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import DataTable from 'react-data-table-component';
 
 const Usermanage = () => {
   const [hotels, setHotels] = useState([]);
@@ -36,15 +37,12 @@ const Usermanage = () => {
 
   const { isLoggedIn, token, username } = useSelector((state) => state.loggedin);
 
-
-
-
   useEffect(() => {
     if (username && token) {
       const formData = new FormData();
       formData.append('username', username);
       formData.append('token', token);
-      fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+      fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
         method: 'POST',
         body: formData,
       })
@@ -76,27 +74,6 @@ const Usermanage = () => {
     setSelectedHotel(null); // Clear selected hotel data
   };
 
-  // Pagination Logic
-  const indexOfLastHotel = currentPage * hotelsPerPage;
-  const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
-  const currentHotels = Array.isArray(hotels) ? hotels.slice(indexOfFirstHotel, indexOfLastHotel) : [];
-
-  const totalPages = Math.ceil(hotels / hotelsPerPage);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-  
   const addEmpUser = () => {
     setOpenModal(true);
     setModalOpen(false);
@@ -121,7 +98,7 @@ const Usermanage = () => {
       formData.append('hotel_contact', hotelcontact);
 
       try {
-        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
+        const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
           method: 'POST',
           body: formData,
         });
@@ -180,7 +157,7 @@ const Usermanage = () => {
     formData.append('hotel_id', confirmdel);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=deleteHotelDetails', {
+      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=deleteHotelDetails', {
         method: 'POST',
         body: formData,
       });
@@ -223,7 +200,7 @@ const Usermanage = () => {
     formData.append('hotel_ifsc', ifsccode);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
+      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
         method: 'POST',
         body: formData,
       });
@@ -260,7 +237,7 @@ const Usermanage = () => {
     formData.append('hotel_id', selectedHotel.Hotel_ID);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=deleteHotelAccountDetails', {
+      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=deleteHotelAccountDetails', {
         method: 'POST',
         body: formData,
       });
@@ -289,6 +266,61 @@ const Usermanage = () => {
     }
   };
 
+  const columns = [
+    {
+      name: 'Sr. No',
+      selector: (row, index) => index + 1,
+      sortable: true,
+      width: '80px'
+    },
+    {
+      name: 'Hotel Name',
+      selector: row => row.Hotel_Name,
+      sortable: true,
+    },
+    {
+      name: 'Hotel ID',
+      selector: row => row.Hotel_ID,
+      sortable: true,
+    },
+    {
+      name: 'Hotel Contact',
+      selector: row => row.Hotel_Contact,
+      sortable: true,
+    },
+    {
+      name: 'Account Details Status',
+      selector: row => row.Hotel_Account_Details_Status ? 'Active' : 'Inactive',
+      sortable: true,
+    },
+    {
+      name: 'Action',
+      cell: (row) => (
+        <div style={{ display: 'flex', justifyContent: 'space-around', cursor: 'pointer' }}>
+          {/* Delete Icon */}
+          <span
+            className="data-bs-toggle"
+            data-bs-target="#exampleModal"
+            onClick={() => userlogoutpopbox(row.Hotel_ID)} // Function for delete
+            style={{marginRight:'20px'}}
+          >
+            <i className="fa-solid fa-trash text-danger"></i>
+          </span>
+  
+          {/* Edit Icon */}
+          <span
+            className="data-bs-toggle"
+            data-bs-target="#exampleModal"
+            onClick={() => openHotelpopup(row)} // Function for edit
+          >
+            <i className="fa-solid fa-pen text-primary "></i>
+          </span>
+        </div>
+      ),
+    },
+  ];
+  
+  
 
   return (
     <div>
@@ -332,91 +364,20 @@ const Usermanage = () => {
             <div className="addbtn">
               <button className="mt-4 " onClick={addEmpUser}>Add User</button>
             </div>
-            <div className="table-container">
-              <table className="custom-table">
-                <thead>
-                  <tr style={{ backgroundColor: bgcolor, color: textcolor, height :'60px' }}>
-                    <th style={{ padding: '10px' }}>Hotel Name</th>
-                    <th>Hotel ID</th>
-                    <th>Hotel Contact</th>
-                    <th>Account Details Status</th>
-                    {/* <th>Account Number</th> */}
-                    {/* <th>IFSC Code</th> */}
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    // loading ? (
-                    // <tr>
-                    //   <td colSpan="6" style={{ textAlign: 'center' }}>
-                    //     Loading...
-                    //   </td>
-                    // </tr>
-                    // ) : (
-                    currentHotels.map((hotel, index) => (
-                      <tr key={index} onClick={() => openHotelpopup(hotel)} style={{ cursor: 'pointer' }}>
-                        <td>{hotel.Hotel_Name}</td>
-                        <td>{hotel.Hotel_ID}</td>
-                        <td>{hotel.Hotel_Contact}</td>
-                        <td>{hotel.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}</td>
-                        {/* <td>
-                          {hotel.Hotel_Account_Details_Status ? hotel.Hotel_Account_Details.Account_Number : '-'}
-                        </td> */}
-                        {/* <td>
-                          {hotel.Hotel_Account_Details_Status ? hotel.Hotel_Account_Details.IFSC_Code : '-'}
-                        </td> */}
-                        <span
-                          className="data-bs-toggle"
-                          data-bs-target="#exampleModal"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            userlogoutpopbox(hotel.Hotel_ID);
-                          }}
-                        >
-                          <i className="fa-solid fa-trash text-danger mt-3"></i>
-                        </span>
-                      </tr>
-                    )
-                    )
-                    // )
-                  }
-                </tbody>
-              </table>
-
-              {/* Pagination Controls */}
-              <nav>
-                <ul className="pagination">
-                  <li className="page-item">
-                    <button
-                      onClick={handlePrev}
-                      className="page-link"
-                      disabled={currentPage === 1}
-                    >
-                      Prev
-                    </button>
-                  </li>
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <li key={index + 1} className="page-item">
-                      <button
-                        onClick={() => paginate(index + 1)}
-                        className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}
-                      >
-                        {index + 1}
-                      </button>
-                    </li>
-                  ))}
-                  <li className="page-item">
-                    <button
-                      onClick={handleNext}
-                      className="page-link"
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+            <div className="employee-table" style={{backgroundColor: modalbg, color: textcolor, width:'100%', height:'auto', marginTop:'20px', borderRadius:'6px'}}>
+            <div className="table-container" style={{padding:'15px 0px'}} >
+            <DataTable
+                title='Hotel Data'
+                columns={columns}
+                data={hotels}
+                pagination
+                paginationPerPage={2}  
+                striped
+                responsive
+                highlightOnHover            
+              />
+              
+            </div>
             </div>
           </div>
         </div>
@@ -548,7 +509,7 @@ const Usermanage = () => {
                 </div>
 
                 <div className="form-group addbtn text-center">
-                  <button onClick={addDetails}>
+                  <button onClick={addDetails} style={{marginRight:'10px'}}>
                     Add Details
                   </button>
                   <button onClick={RemoveDetails}>

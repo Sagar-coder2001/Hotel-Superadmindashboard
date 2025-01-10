@@ -5,6 +5,7 @@ import '../Superadmindashboard/superadmin.css'
 import Layout from '../../Components/Layout/Layout';
 import Admindashboard from '../Dashboard/Admindashboard';
 import { useSelector } from 'react-redux';
+import DataTable from 'react-data-table-component';
 
 
 const Superadmin = () => {
@@ -33,9 +34,6 @@ const Superadmin = () => {
   const bgcolor = useSelector((state) => state.theme.navbar)
   const textcolor = useSelector((state) => state.theme.textcolor);
   const modalbg = useSelector((state) => state.theme.modal);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(5);
   const { isLoggedIn, token, username } = useSelector((state) => state.loggedin);
 
 
@@ -60,7 +58,7 @@ const Superadmin = () => {
       formData.append('hotel_id', selectedHotel_id);
 
       try {
-        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addUser', {
+        const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=addUser', {
           method: 'POST',
           body: formData,
         });
@@ -94,7 +92,7 @@ const Superadmin = () => {
     formData.append('hotel_id', hotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getUser', {
+      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=getUser', {
         method: 'POST',
         body: formData,
       });
@@ -146,7 +144,7 @@ const Superadmin = () => {
     formData.append('hotel_id', selectedHotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=removeUser', {
+      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=removeUser', {
         method: 'POST',
         body: formData,
       });
@@ -180,7 +178,7 @@ const Superadmin = () => {
         formData.append('token', token);
 
         try {
-          const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+          const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
             method: 'POST',
             body: formData,
           });
@@ -210,25 +208,71 @@ const Superadmin = () => {
     setFilteredHotels(filtered);
   };
 
-  // add pagination login here 
 
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = Array.isArray(allUserdata) ? allUserdata.slice(indexOfFirstUser, indexOfLastUser) : [];
 
-  const totalPages = Math.ceil(allUserdata/ usersPerPage);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  const columns = [
+    {
+      name: 'Sr. No',
+      selector: (row, index) => index + 1,
+      sortable: true,
+    },
+    {
+      name: 'Username',
+      selector: row => <><div className=''>{row.Username}</div></>,
+      sortable: true,
+    },
+    {
+      name: 'Role',
+      selector: row => row.Role,
+      sortable: true,
+    },
+    {
+      name: 'Action',
+      button: true,
+      cell: row => (
+        <span
+          className="data-bs-toggle"
+          data-bs-target="#exampleModal"
+          onClick={() => userlogoutpopbox(row.Username)}
+        >
+          <i className="fa-solid fa-trash text-danger"></i>
+        </span>
+      )
     }
-  };
+  ];
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+
+  // const columns = [
+  //   {
+  //     name: <><div className='heading'>Sr. No</div></>,
+  //     selector: () => <><div className='srno'>1</div></>,
+  //     sortable: true,
+  //   },
+  //   {
+  //     name: <><div className='heading'>Username</div></>,
+  //     selector: row => <><div className='srno'>pranav</div></>,
+
+  //     sortable: true,
+  //   },
+  //   {
+  //     name: <><div className='heading'>Role</div></>,
+  //     selector: row => <><div className='srno'>emp</div></>,
+
+  //     sortable: true,
+  //   },
+  //   {
+  //     name: <><div className='heading'>Action</div></>,
+  //     cell: row => (
+  //       <span
+  //         className="data-bs-toggle"
+  //         data-bs-target="#exampleModal"
+  //       >
+  //         <i className="fa-solid fa-trash text-danger srno"></i>
+  //       </span>
+  //     ),
+  //   }
+  // ];
 
   return (
     <Layout>
@@ -418,63 +462,19 @@ const Superadmin = () => {
             </div>
           )}
           {/* User List */}
-          <div className="employee-table">
-            <div className="table-container">
-              <table className="custom-table">
-                <thead>
-                  <tr style={{ backgroundColor: bgcolor, color: textcolor, height:'60px' }}>
-                    <th style={{ padding: '10px' }}>Sr. No</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loadingUsers ? (
-                    <tr>
-                      <td colSpan="4" style={{ textAlign: 'center' }}>
-                        Loading Users...
-                      </td>
-                    </tr>
-                  ) : currentUsers.length > 0 ? (
-                    currentUsers.map((emp, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{emp.Username}</td>
-                        <td>{emp.Role}</td>
-                        <td>
-                          <span
-                            className="data-bs-toggle"
-                            data-bs-target="#exampleModal"
-                            onClick={() => userlogoutpopbox(emp.Username)}
-                          >
-                            <i className="fa-solid fa-trash text-danger"></i>
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4" style={{ textAlign: 'center' }}>
-                        No employees found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+          <div className="employee-table" style={{backgroundColor: modalbg, color: textcolor, width:'100%', height:'auto', marginTop:'20px', borderRadius:'6px'}}>
+          <div className="table-container" style={{padding:'15px 0px'}} >
+            <DataTable
+              title="Employee List"
+              columns={columns}
+              data={allUserdata}
+              pagination           
+              paginationPerPage={2}    
+              striped
+              responsive
+              highlightOnHover
+            />
             </div>
-          </div>
-          {/* Pagination Controls */}
-          <div className="pagination">
-            <button onClick={handlePrevPage} className='btn btn-info' disabled={currentPage === 1}>
-              Previous
-            </button>
-            <span style={{margin:'8px'}}>
-              {currentPage}
-            </span>
-            <button onClick={handleNextPage} className='btn btn-info' disabled={currentPage === totalPages}>
-              Next
-            </button>
           </div>
         </div>
       </div>

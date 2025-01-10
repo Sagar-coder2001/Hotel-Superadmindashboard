@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { dark, white } from '../../Features/Themeslice';
-// import { useSelector } from 'react-redux';
+import zeallogo from '../../assets/Zeal_Logo_2.png'
 
 const Navbar = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(false);
@@ -13,7 +13,7 @@ const Navbar = () => {
     const dispatch = useDispatch()
 
     const toggleTheme = () => {
-        if (bgcolor == 'black') {
+        if (bgcolor == '#04293A') {
             dispatch(white());
             localStorage.removeItem('theme');
             setChangeicon(false)
@@ -29,7 +29,9 @@ const Navbar = () => {
             <header>
                 <div className='navbar' style={{backgroundColor: bgcolor}}>
                     <div className="leftnavbar">
-                        <a href="" className='ml-4'>Hotel Super-Admin</a>
+                        {/* <a href="" className='ml-4'>Zeal Intereactive Services</a> */}
+                        <img src={zeallogo} style={{width:'30px', height:'30px', marginLeft:'40px'}} alt="" />
+
                     </div>
                             <>
                                 <div className="rightnavbar" style={{color:textcolor}}>

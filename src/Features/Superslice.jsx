@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isLoggedIn: localStorage.getItem('isLoggedIn') ? true : false,
-  token: localStorage.getItem('token') || null,  // Track the token
-  username: localStorage.getItem('username') || null,  // Track the username
-  password: localStorage.getItem('password') || null,
+  token: localStorage.getItem('token') || null,
+  username: localStorage.getItem('username') || null,
+  password: '',
 };
 
 export const Superslice = createSlice({
@@ -22,7 +22,7 @@ export const Superslice = createSlice({
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('token', action.payload.token);
       localStorage.setItem('username', action.payload.username);
-      localStorage.setItem('password', action.payload.password);
+      // localStorage.setItem('password', action.payload.password);
 
     },
     logout: (state) => {

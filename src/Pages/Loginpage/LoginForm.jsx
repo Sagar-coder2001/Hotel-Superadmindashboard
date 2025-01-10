@@ -43,13 +43,13 @@ const LoginForm = () => {
 
     const submitDetails = async (e) => {
         e.preventDefault();
-        // navigate('/Admindashboard');
+        navigate('/Admindashboard');
         try {
             const formdata = new FormData();
             formdata.append('username', userdetails.username);
             formdata.append('password', userdetails.password);
 
-            const response = await fetch('http://192.168.1.25/Queue/Super_Admin/log.php?do=login', {
+            const response = await fetch('http://192.168.1.5/Queue/Super_Admin/log.php?do=login', {
                 method: 'POST',
                 body: formdata,
             });
@@ -121,7 +121,7 @@ const LoginForm = () => {
                                     name="password"
                                     id="password"
                                 />
-                                <i class="fa-solid fa-eye" style={{position: 'absolute', cursor : 'pointer', top:'40px', right:'10px'}} onClick={() => {togglePass('password')}}></i>
+                                <i class="fa-solid fa-eye" style={{position: 'absolute', cursor : 'pointer', top:'40px', right:'10px', color: 'black'}} onClick={() => {togglePass('password')}}></i>
                             </div>
                             <div className="mb-3 form-check">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />

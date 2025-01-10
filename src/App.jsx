@@ -9,6 +9,7 @@ import Maindashboard from './Pages/Maindashboard/Maindashboard'
 // import Hotel_dashboard from './Pages/Hotel-Dashboard/Hotel_dashboard'
 // import Employee_dashboard from './Pages/Employee-dashboard/Employee_dashboard'
 import { useSelector } from 'react-redux'
+import Pagenotfound from './Pages/Pagenotfound/Pagenotfound'
 
 function App() {
   const bgcolor = useSelector((state) => state.theme.value);
@@ -28,6 +29,8 @@ function App() {
         <Route path = "/Maindashboard" element ={<Maindashboard/>}/>
         <Route path = "/Superadmin" element ={<Superadmin/>}/>
         <Route path = "/Usermanage" element ={<Usermanage/>}/> 
+        <Route path = "*" element ={<Pagenotfound/>}/> 
+
       </Routes>
       </BrowserRouter>
 

@@ -8,10 +8,6 @@ import { useSelector } from 'react-redux'
 const Maindashboard = () => {
   const location = useLocation();
 
-  // const { tokenid, username } = location.state || {};
-  // const [token, setToken] = useState(tokenid || '');
-  // const [user, setUsername] = useState(username || '');
-
   const { isLoggedIn, token, username } = useSelector((state) => state.loggedin);
 
 
