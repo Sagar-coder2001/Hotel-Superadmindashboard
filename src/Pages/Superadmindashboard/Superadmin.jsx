@@ -6,7 +6,7 @@ import Layout from '../../Components/Layout/Layout';
 import Admindashboard from '../Dashboard/Admindashboard';
 import { useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
-
+import { motion } from 'framer-motion';
 
 const Superadmin = () => {
   // const location = useLocation();
@@ -58,7 +58,7 @@ const Superadmin = () => {
       formData.append('hotel_id', selectedHotel_id);
 
       try {
-        const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=addUser', {
+        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addUser', {
           method: 'POST',
           body: formData,
         });
@@ -92,7 +92,7 @@ const Superadmin = () => {
     formData.append('hotel_id', hotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=getUser', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getUser', {
         method: 'POST',
         body: formData,
       });
@@ -144,7 +144,7 @@ const Superadmin = () => {
     formData.append('hotel_id', selectedHotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=removeUser', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=removeUser', {
         method: 'POST',
         body: formData,
       });
@@ -178,7 +178,7 @@ const Superadmin = () => {
         formData.append('token', token);
 
         try {
-          const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+          const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
             method: 'POST',
             body: formData,
           });
@@ -213,26 +213,26 @@ const Superadmin = () => {
 
   const columns = [
     {
-      name: 'Sr. No',
-      selector: (row, index) => index + 1,
+      name: <div className='heading'>Sr. No</div>,
+      selector: (row, index) => <><div className='srno'>{index + 1}</div></>,
       sortable: true,
     },
     {
-      name: 'Username',
-      selector: row => <><div className=''>{row.Username}</div></>,
+      name: <div className='heading'>Username</div>,
+      selector: row => <><div className='srno'>{row.Username}</div></>,
       sortable: true,
     },
     {
-      name: 'Role',
-      selector: row => row.Role,
+      name: <div className='heading'>Role</div>,
+      selector: row => <><div className='srno'>{row.Role }</div></>,
       sortable: true,
     },
     {
-      name: 'Action',
+      name: <div className='heading'>Action</div>,
       button: true,
       cell: row => (
         <span
-          className="data-bs-toggle"
+          className="data-bs-toggle srno"
           data-bs-target="#exampleModal"
           onClick={() => userlogoutpopbox(row.Username)}
         >
@@ -242,42 +242,10 @@ const Superadmin = () => {
     }
   ];
 
-
-  // const columns = [
-  //   {
-  //     name: <><div className='heading'>Sr. No</div></>,
-  //     selector: () => <><div className='srno'>1</div></>,
-  //     sortable: true,
-  //   },
-  //   {
-  //     name: <><div className='heading'>Username</div></>,
-  //     selector: row => <><div className='srno'>pranav</div></>,
-
-  //     sortable: true,
-  //   },
-  //   {
-  //     name: <><div className='heading'>Role</div></>,
-  //     selector: row => <><div className='srno'>emp</div></>,
-
-  //     sortable: true,
-  //   },
-  //   {
-  //     name: <><div className='heading'>Action</div></>,
-  //     cell: row => (
-  //       <span
-  //         className="data-bs-toggle"
-  //         data-bs-target="#exampleModal"
-  //       >
-  //         <i className="fa-solid fa-trash text-danger srno"></i>
-  //       </span>
-  //     ),
-  //   }
-  // ];
-
   return (
     <Layout>
       <Admindashboard />
-      <div className="dashboard-container mt-5">
+      <div className="dashboard-container mt-25">
         {delpopbox && (
           <div className="delpopup">
             <div className="popup-content">
@@ -305,12 +273,12 @@ const Superadmin = () => {
             <button className="mt-4" onClick={addEmpUser}>Add User</button>
             <div className="row mt-4">
              
-              <label htmlFor="role" className="col-5 col-form-label text-start"><strong>Hotel-Id</strong></label>
-              <div className="col-7">
+              <label htmlFor="role" className="col-4 col-form-label text-start"><strong>Hotel-Id</strong></label>
+              <div className="col-8">
                 <div>
                 <input type="text"
                               placeholder='Search Hotels'
-                              style={{ marginBottom: '10px', boxShadow: '0px 0px 5px solid', outline: 'none', padding: '4px' }}
+                              style={{ marginBottom: '10px', boxShadow: '0px 0px 25px solid', outline: 'none', padding: '4px' }}
                               onChange={handleSearchChange}
                               className='form-control'
                             />
@@ -348,7 +316,11 @@ const Superadmin = () => {
           </div>
           {/* Modal for Adding User */}
           {openModal && (
-            <div className="user-details-card text-center" style={{backgroundColor : modalbg, color:textcolor}}>
+            <motion.div
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
+            transition={{ duration: 0.6 }}
+            className="user-details-card text-center" style={{backgroundColor : modalbg, color:textcolor}}>
               <form>
                 <h3>superadmin</h3>
                 <button
@@ -373,13 +345,13 @@ const Superadmin = () => {
                   </div>
                   {showerr &&
                     <div>
-                      <span style={{ color: 'red', marginLeft: '10px', fontSize: '15px' }}>username is required</span>
+                      <span style={{ color: 'red', marginLeft: '10px', fontSize: '125px' }}>username is required</span>
                     </div>
                   }
                 </div>
                 <div className="row mt-4">
-                  <label htmlFor="contact" className="col-5 col-form-label text-start">Password</label>
-                  <div className="col-7">
+                  <label htmlFor="contact" className="col-4 col-form-label text-start">Password</label>
+                  <div className="col-8">
                     <input
                       type="text"
                       className="form-control"
@@ -390,7 +362,7 @@ const Superadmin = () => {
                   </div>
                   {showerr ?
                     <div>
-                      <span style={{ color: 'red', marginLeft: '80px', fontSize: '15px' }}>password is required</span>
+                      <span style={{ color: 'red', marginLeft: '80px', fontSize: '125px' }}>password is required</span>
                     </div>
                     : ""
                   }
@@ -436,14 +408,14 @@ const Superadmin = () => {
                 <div className="input-group row mb-3">
                   <span
                     className="queuefetchbtn col-4 m-auto"
-                    style={{ margin: '0px 5px', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ margin: '0px 25px', borderRadius: '4px', cursor: 'pointer' }}
                     onClick={handleSubmit}
                   >
                     Submit
                   </span>
                 </div>
               </form>
-            </div>
+            </motion.div>
           )}
           {/* User Exists Error Message */}
           {userExist && (
@@ -462,20 +434,24 @@ const Superadmin = () => {
             </div>
           )}
           {/* User List */}
-          <div className="employee-table" style={{backgroundColor: modalbg, color: textcolor, width:'100%', height:'auto', marginTop:'20px', borderRadius:'6px'}}>
-          <div className="table-container" style={{padding:'15px 0px'}} >
+          <motion.div 
+            initial={{ opacity: 0 , y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          className="employee-table" style={{backgroundColor: modalbg, color: textcolor, width:'100%', height:'auto', marginTop:'20px', borderRadius:'6px'}}>
+          <div className="table-container" style={{padding:'25px 0px'}} >
             <DataTable
-              title="Employee List"
+              title={<span style={{fontSize: '24px', fontWeight: 'bold' }}>Employee List</span>}
               columns={columns}
               data={allUserdata}
               pagination           
-              paginationPerPage={2}    
+              paginationPerPage={10}    
               striped
               responsive
               highlightOnHover
             />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </Layout>

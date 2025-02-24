@@ -73,6 +73,7 @@
   /* Offset the content by the sidebar's width */
   padding: 20px;
   overflow-y: auto;
+  margin-top: 30px;
   /* Allow scrolling if the content overflows */
 }
 
@@ -280,23 +281,6 @@
   text-align: center;
   overflow: auto;
 }
-
-.table-container table {
-  width: 100%;
-}
-
-.table-container table,
-tr,
-td {
-  padding: 10px;
-  font-size: 18px;
-  transition: transform 0.3s ease;
-}
-
-.table-container tr:nth-child(odd) {
-  background-color: #aed3d0;
-}
-
 
 /* user details */
 .user-details-card {

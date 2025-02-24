@@ -4,6 +4,7 @@ import Layout from '../../Components/Layout/Layout';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { userlogin } from '../../Features/Superslice';
+import { motion } from 'framer-motion';
 
 const LoginForm = () => {
     const [userdetails, setUserDetails] = useState({
@@ -43,13 +44,13 @@ const LoginForm = () => {
 
     const submitDetails = async (e) => {
         e.preventDefault();
-        navigate('/Admindashboard');
+        // navigate('/Admindashboard');
         try {
             const formdata = new FormData();
             formdata.append('username', userdetails.username);
             formdata.append('password', userdetails.password);
 
-            const response = await fetch('http://192.168.1.5/Queue/Super_Admin/log.php?do=login', {
+            const response = await fetch('http://192.168.1.25/Queue/Super_Admin/log.php?do=login', {
                 method: 'POST',
                 body: formdata,
             });
@@ -64,10 +65,10 @@ const LoginForm = () => {
                 dispatch(userlogin({
                     token: data.Token,
                     username: userdetails.username,
-                    password : userdetails.password,
-          
-                  }));
-                navigate('/Maindashboard', { state: { tokenid: data.Token, username: userdetails.username}});
+                    password: userdetails.password,
+
+                }));
+                navigate('/Maindashboard', { state: { tokenid: data.Token, username: userdetails.username } });
             }
 
         } catch (err) {
@@ -84,20 +85,26 @@ const LoginForm = () => {
         <div>
             <Layout>
 
-                <div className={`login-container ${isDarkTheme ? 'dark' : 'light'}`}>
+                <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1 }}
+                    className={`login-container ${isDarkTheme ? 'dark' : 'light'}`}>
                     <div className="card-container">
-                    {
-                                showerror ? (
-                                    <>
-                                        <div>
-                                            <div className="showerror text-center">
-                                                <strong className='text-danger fs-2'>Error! </strong><span style={{ fontSize: '18px' }}>Invalid Username and Password</span>
-                                                <i class="fa-solid fa-xmark"onClick={() => setShowerr(false)} style={{marginLeft:'15px', fontSize:'25px', color:"red"}}></i> 
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : ''
-                            }
+                        {
+                            // showerror ? (
+                            //     <>
+                            //         <div>
+                            //             <div className="showerror text-center">
+                            //                 <strong className='text-danger fs-2'>Error! </strong><span style={{ fontSize: '18px' }}>Invalid Username and Password</span>
+                            //                 <i class="fa-solid fa-xmark"onClick={() => setShowerr(false)} style={{marginLeft:'125px', fontSize:'225px', color:"red"}}></i> 
+                            //             </div>
+                            //         </div>
+                            //     </>
+                            // ) : ''
+                        }
+
+
                         <form>
                             <h4 className="text-center fs-2">Superadmin Login</h4>
                             <div className="mb-3">
@@ -110,8 +117,9 @@ const LoginForm = () => {
                                     id="username"
                                     name="username"
                                 />
+                                <span className='text-danger'>{showerror ? 'Invalid Username' : ''}</span>
                             </div>
-                            <div className="mb-3" style={{position:'relative'}}>
+                            <div className="mb-3" style={{ position: 'relative' }}>
                                 <label htmlFor="password" className="form-label">Password</label>
                                 <input
                                     type="password"
@@ -121,7 +129,8 @@ const LoginForm = () => {
                                     name="password"
                                     id="password"
                                 />
-                                <i class="fa-solid fa-eye" style={{position: 'absolute', cursor : 'pointer', top:'40px', right:'10px', color: 'black'}} onClick={() => {togglePass('password')}}></i>
+                                <i class="fa-solid fa-eye" style={{ position: 'absolute', cursor: 'pointer', top: '40px', right: '10px', color: 'black' }} onClick={() => { togglePass('password') }}></i>
+                                <span className='text-danger'>{showerror ? 'Invalid Password' : ''}</span>
                             </div>
                             <div className="mb-3 form-check">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
@@ -136,7 +145,7 @@ const LoginForm = () => {
                             </button>
                         </form>
                     </div>
-                </div>
+                </motion.div>
             </Layout>
         </div>
     );

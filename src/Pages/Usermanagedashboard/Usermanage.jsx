@@ -5,20 +5,13 @@ import '../Usermanagedashboard/Usermanage.css';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
+import { motion } from 'framer-motion';
 
 const Usermanage = () => {
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false); 
-  const [selectedHotel, setSelectedHotel] = useState(null); 
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hotelsPerPage] = useState(3); 
-
-  // const location = useLocation();
-  // const { tokenid, username } = location.state || {};
-  // const [token, setToken] = useState(tokenid || '');
-  // const [user, setUsername] = useState(username || '');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedHotel, setSelectedHotel] = useState(null);
   const [openmodel, setOpenModal] = useState(false);
   const [hotelname, setHotelname] = useState('')
   const [hotelcontact, setHotelContact] = useState('');
@@ -28,7 +21,7 @@ const Usermanage = () => {
   const [openadd, setopenadd] = useState(false)
   const [accountnumber, setaccountnumber] = useState(null)
   const [ifsccode, setifsccodenumber] = useState(null);
-  const [useraddloading , setUseraddloading] = useState(false)
+  const [useraddloading, setUseraddloading] = useState(false)
 
   const bgcolor = useSelector((state) => state.theme.navbar)
   const textcolor = useSelector((state) => state.theme.textcolor);
@@ -42,7 +35,7 @@ const Usermanage = () => {
       const formData = new FormData();
       formData.append('username', username);
       formData.append('token', token);
-      fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+      fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
         method: 'POST',
         body: formData,
       })
@@ -98,7 +91,7 @@ const Usermanage = () => {
       formData.append('hotel_contact', hotelcontact);
 
       try {
-        const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
+        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
           method: 'POST',
           body: formData,
         });
@@ -117,7 +110,7 @@ const Usermanage = () => {
         console.error('Error submitting data:', error);
         alert('Error: ' + error.message);
       }
-      finally{
+      finally {
         setUseraddloading(false)
       }
     }
@@ -125,7 +118,7 @@ const Usermanage = () => {
 
   setTimeout(() => {
     setshowerr(false);
-  }, 5000);
+  }, 25000);
 
   setTimeout(() => {
     setopenadd(false);
@@ -157,7 +150,7 @@ const Usermanage = () => {
     formData.append('hotel_id', confirmdel);
 
     try {
-      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=deleteHotelDetails', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=deleteHotelDetails', {
         method: 'POST',
         body: formData,
       });
@@ -165,7 +158,7 @@ const Usermanage = () => {
       if (!response.ok) throw new Error('Failed to delete the user');
 
       const data = await response.json();
-      if(data.Status === true){
+      if (data.Status === true) {
         window.location.reload();
       }
       console.log('User removed successfully:', data);
@@ -175,7 +168,7 @@ const Usermanage = () => {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
     }
-    finally{
+    finally {
       setUseraddloading(false)
     }
   };
@@ -183,7 +176,7 @@ const Usermanage = () => {
 
   // add Details of the user 
   const addDetails = async (e) => {
- 
+
     e.preventDefault();
     // Validate the inputs to ensure no empty values
     if (!accountnumber || !ifsccode) {
@@ -200,7 +193,7 @@ const Usermanage = () => {
     formData.append('hotel_ifsc', ifsccode);
 
     try {
-      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
         method: 'POST',
         body: formData,
       });
@@ -224,7 +217,7 @@ const Usermanage = () => {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
     }
-    finally{
+    finally {
       setUseraddloading(false)
     }
   };
@@ -237,7 +230,7 @@ const Usermanage = () => {
     formData.append('hotel_id', selectedHotel.Hotel_ID);
 
     try {
-      const response = await fetch('http://192.168.1.5/Queue/Super_Admin/hotel.php?for=deleteHotelAccountDetails', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=deleteHotelAccountDetails', {
         method: 'POST',
         body: formData,
       });
@@ -261,55 +254,55 @@ const Usermanage = () => {
       console.error('Error submitting data:', error);
       alert('Error: ' + error.message);
     }
-    finally{
+    finally {
       setUseraddloading(false)
     }
   };
 
   const columns = [
     {
-      name: 'Sr. No',
-      selector: (row, index) => index + 1,
+      name: <div className='heading'>Sr. No</div>,
+      selector: (row, index) => <><div className='srno'>{index + 1}</div></>,
       sortable: true,
-      width: '80px'
+      width: '100px'
     },
     {
-      name: 'Hotel Name',
-      selector: row => row.Hotel_Name,
-      sortable: true,
-    },
-    {
-      name: 'Hotel ID',
-      selector: row => row.Hotel_ID,
+      name: <div className='heading'>Hotel Name</div>,
+      selector: row => <><div className='srno'>{row.Hotel_Name}</div></>,
       sortable: true,
     },
     {
-      name: 'Hotel Contact',
-      selector: row => row.Hotel_Contact,
+      name: <div className='heading'>Hotel Id</div>,
+      selector: row => <><div className='srno'>{row.Hotel_ID}</div></>,
       sortable: true,
     },
     {
-      name: 'Account Details Status',
-      selector: row => row.Hotel_Account_Details_Status ? 'Active' : 'Inactive',
+      name: <div className='heading'>Hotel Contact</div>,
+      selector: row => <><div className='srno'>{row.Hotel_Contact}</div></>,
       sortable: true,
     },
     {
-      name: 'Action',
+      name: <div className='heading'>Account Details Status</div>,
+      selector: row => <><div className='srno'>{row.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}</div></>,
+      sortable: true,
+    },
+    {
+      name: <div className='heading'>Action</div>,
       cell: (row) => (
         <div style={{ display: 'flex', justifyContent: 'space-around', cursor: 'pointer' }}>
           {/* Delete Icon */}
           <span
-            className="data-bs-toggle"
+            className="data-bs-toggle srno"
             data-bs-target="#exampleModal"
             onClick={() => userlogoutpopbox(row.Hotel_ID)} // Function for delete
-            style={{marginRight:'20px'}}
+            style={{ marginRight: '20px' }}
           >
             <i className="fa-solid fa-trash text-danger"></i>
           </span>
-  
+
           {/* Edit Icon */}
           <span
-            className="data-bs-toggle"
+            className="data-bs-toggle srno"
             data-bs-target="#exampleModal"
             onClick={() => openHotelpopup(row)} // Function for edit
           >
@@ -319,14 +312,14 @@ const Usermanage = () => {
       ),
     },
   ];
-  
-  
+
+
 
   return (
     <div>
       <Layout>
         <Admindashboard />
-        <div className="dashboard-container mt-5">
+        <div className="dashboard-container mt-25">
           <div className="hotelnamecontainer mt-4">
             <h3>Hotel Details</h3>
 
@@ -349,43 +342,51 @@ const Usermanage = () => {
               )
             }
 
-{
-          useraddloading && (
-            <>
-              <div className="loader-overlay delpopup">
-                <div class="spinner-border text-primary" role="status">
-                  <span class="sr-only">Loading...</span>
-                </div>
-              </div>
-            </>
-          )
-        }
+            {
+              useraddloading && (
+                <>
+                  <div className="loader-overlay delpopup">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                </>
+              )
+            }
 
             <div className="addbtn">
-              <button className="mt-4 " onClick={addEmpUser}>Add User</button>
+              <button className="mt-4 " onClick={addEmpUser}>Add Hotel</button>
             </div>
-            <div className="employee-table" style={{backgroundColor: modalbg, color: textcolor, width:'100%', height:'auto', marginTop:'20px', borderRadius:'6px'}}>
-            <div className="table-container" style={{padding:'15px 0px'}} >
-            <DataTable
-                title='Hotel Data'
-                columns={columns}
-                data={hotels}
-                pagination
-                paginationPerPage={2}  
-                striped
-                responsive
-                highlightOnHover            
-              />
-              
-            </div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className="employee-table" style={{ backgroundColor: modalbg, color: textcolor, width: '100%', height: 'auto', marginTop: '20px', borderRadius: '6px' }}>
+              <div className="table-container" style={{ padding: '30px 0px' }} >
+                <DataTable
+                  title={<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Hotel List</span>}
+                  columns={columns}
+                  data={hotels}
+                  pagination
+                  paginationPerPage={10}
+                  striped
+                  responsive
+                  highlightOnHover
+                />
+
+              </div>
+            </motion.div>
           </div>
         </div>
 
         {/* add hotels */}
 
         {openmodel && (
-          <div className="user-details-card text-center" style={{backgroundColor : modalbg, color : textcolor}}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="user-details-card text-center" style={{ backgroundColor: modalbg, color: textcolor }}>
             <form>
               <h3>Add Hotel</h3>
               {
@@ -438,87 +439,121 @@ const Usermanage = () => {
               <div className="input-group row mt-3">
                 <span
                   className="queuefetchbtn col-4 m-auto"
-                  style={{ margin: '0px 5px', borderRadius: '4px', cursor: 'pointer' }}
+                  style={{ margin: '0px 25px', borderRadius: '4px', cursor: 'pointer' }}
                   onClick={handleSubmit}
                 >
                   Submit
                 </span>
               </div>
             </form>
-          </div>
+          </motion.div>
         )}
 
         {/* Modal Popup */}
         {modalOpen && selectedHotel && (
-        
 
-          <div className="modal-overlay" style={{backgroundColor : modalbg , color: textcolor}}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="modal-overlay" style={{ backgroundColor: modalbg, color: textcolor }}>
             <div className="modal-content">
-              <h4 style={{ textAlign: 'center', marginBottom: '20px'}}>Hotel Details</h4>
-              <span className="close-btn" style={{cursor:'pointer'}} onClick={closeModal}>
+              <h4 style={{ textAlign: 'center', marginBottom: '20px' }}>Hotel Details</h4>
+              <span className="close-btn" style={{ cursor: 'pointer' }} onClick={closeModal}>
                 &#10006;
               </span>
               <form>
-                <div className="form-group">
-                  <label><strong>Hotel Name:</strong></label>
-                  <input type="text" value={selectedHotel.Hotel_Name} readOnly />
-                </div>
-                <div className="form-group">
-                  <label><strong>Hotel ID:</strong></label>
-                  <input type="text" value={selectedHotel.Hotel_ID} readOnly style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }} />
-                </div>
-                <div className="form-group">
-                  <label><strong>Hotel Contact:</strong></label>
-                  <input type="text" value={selectedHotel.Hotel_Contact} readOnly style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }} />
-                </div>
-                <div className="form-group">
-                  <label><strong>Account Details Status:</strong></label>
-                  <input type="text"
-                    value={selectedHotel.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}
-                    readOnly
-                    style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }} />
+                <div className="row text-start" >
+                  <div className="form-group col-lg-6">
+                    <label><strong>Hotel Name:</strong></label>
+                    <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Name} readOnly />
+                  </div>
+                  <div className="form-group col-lg-6">
+                    <label><strong>Hotel ID:</strong></label>
+                    <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_ID} readOnly />
+                  </div>
                 </div>
 
-                <div className="form-group">
-                  <label><strong>Account Number:</strong></label>
-                  <input
-                    type="text"
-                    value={accountnumber || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number || ''}
-                    readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number !== ''}
-                    onChange={(e) => setaccountnumber(e.target.value)} // Allow user to input if editable
-                    style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }}
-                  />
-                   {
-                    showerr ? <div className='text-danger'>Error Invalid Account Number</div> : ''
-                  }
-                </div>
-              
-
-                <div className="form-group">
-                  <label><strong>IFSC Code:</strong></label>
-                  <input
-                    type="text"
-                    value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
-                    readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
-                    onChange={(e) => setifsccodenumber(e.target.value)} // Allow user to input if editable
-                    style={{ border: 'none', outline: 'none', borderBottom: '1px solid' }}
-                  />
-                    {
-                    showerr ? <div className='text-danger'>Error Invalid IFSC Number</div> : ''
-                  }
+                <div className="row text-start mt-4">
+                  <div className="form-group col-lg-6">
+                    <label><strong>Hotel Contact:</strong></label>
+                    <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Contact} readOnly />
+                  </div>
+                  <div className="form-group col-lg-6">
+                    <label><strong>Account Details Status:</strong></label>
+                    <input type="text"
+                      className="form-control mt-2"
+                      value={selectedHotel.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}
+                      readOnly />
+                  </div>
                 </div>
 
-                <div className="form-group addbtn text-center">
-                  <button onClick={addDetails} style={{marginRight:'10px'}}>
+                <div className="row text-start">
+                  <div className="form-group col-md-12">
+                    <label><strong>Account Number:</strong></label>
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={accountnumber || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number || ''}
+                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number !== ''}
+                      onChange={(e) => setaccountnumber(e.target.value)}
+                    />
+                    {showerr && <div className='text-danger'>Error Invalid Account Number</div>}
+                  </div>
+                    </div>
+                    <div className="row text-start">
+                  <div className="form-group col-lg-6">
+                    <label><strong>IFSC Code:</strong></label>
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
+                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
+                      onChange={(e) => setifsccodenumber(e.target.value)}
+                    />
+                    {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
+                  </div>
+
+                  <div className="form-group col-lg-6">
+                    <label><strong>Pin Code:</strong></label>
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
+                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
+                      onChange={(e) => setifsccodenumber(e.target.value)}
+                    />
+                    {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
+                  </div>
+                  </div>
+                  <div className="row text-start">
+                  <div className="form-group col-md-12">
+                    <label><strong>Address:</strong></label>
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
+                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
+                      onChange={(e) => setifsccodenumber(e.target.value)}
+                    />
+                    {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
+                  </div>
+                  </div>
+
+                  
+
+                <div className="form-group text-center">
+                  <button type="button" className="btn btn-primary" onClick={addDetails} style={{ marginRight: '10px' }}>
                     Add Details
                   </button>
-                  <button onClick={RemoveDetails}>
+                  <button type="button" className="btn btn-danger" onClick={RemoveDetails}>
                     Remove Details
                   </button>
                 </div>
               </form>
+
             </div>
-          </div>
+          </motion.div>
         )}
       </Layout>
     </div>
