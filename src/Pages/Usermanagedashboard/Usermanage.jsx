@@ -21,6 +21,10 @@ const Usermanage = () => {
   const [openadd, setopenadd] = useState(false)
   const [accountnumber, setaccountnumber] = useState(null)
   const [ifsccode, setifsccodenumber] = useState(null);
+  const [pincode , setPinCode] = useState('')
+  const [City , setCity] = useState('')
+  const [Address , setAddress] = useState('')
+
   const [useraddloading, setUseraddloading] = useState(false)
 
   const bgcolor = useSelector((state) => state.theme.navbar)
@@ -76,7 +80,7 @@ const Usermanage = () => {
 
 
   const handleSubmit = async (e) => {
-    if (hotelname === "" && hotelcontact === "") {
+    if (!hotelname || !hotelcontact) {
       setshowerr(true);
       return false;
     } else {
@@ -191,6 +195,10 @@ const Usermanage = () => {
     formData.append('hotel_id', selectedHotel.Hotel_ID);
     formData.append('hotel_account', accountnumber);
     formData.append('hotel_ifsc', ifsccode);
+    formData.append('hotel_pincode', pincode);
+    formData.append('hotel_ifsc', City);
+    formData.append('hotel_ifsc', Address);
+
 
     try {
       const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
@@ -357,31 +365,9 @@ const Usermanage = () => {
             <div className="addbtn">
               <button className="mt-4 " onClick={addEmpUser}>Add Hotel</button>
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className="employee-table" style={{ backgroundColor: modalbg, color: textcolor, width: '100%', height: 'auto', marginTop: '20px', borderRadius: '6px' }}>
-              <div className="table-container" style={{ padding: '30px 0px' }} >
-                <DataTable
-                  title={<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Hotel List</span>}
-                  columns={columns}
-                  data={hotels}
-                  pagination
-                  paginationPerPage={10}
-                  striped
-                  responsive
-                  highlightOnHover
-                />
 
-              </div>
-            </motion.div>
-          </div>
-        </div>
 
-        {/* add hotels */}
-
-        {openmodel && (
+            {openmodel && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -402,7 +388,7 @@ const Usermanage = () => {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => setOpenModal(false)}
-                style={{ border: 'none', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
+                style={{ border: 'none', position:'absolute', right:'0', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
               >
                 &#10006;
               </button>
@@ -418,10 +404,8 @@ const Usermanage = () => {
                     required
                   />
                 </div>
-
               </div>
-
-              <div className="row mt-4">
+              <div className="row mt-3">
                 <label htmlFor="contact" className="col-5 col-form-label text-start"><strong>Hotel Contact </strong></label>
                 <div className="col-7">
                   <input
@@ -451,7 +435,6 @@ const Usermanage = () => {
 
         {/* Modal Popup */}
         {modalOpen && selectedHotel && (
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -474,7 +457,7 @@ const Usermanage = () => {
                   </div>
                 </div>
 
-                <div className="row text-start mt-4">
+                <div className="row text-start">
                   <div className="form-group col-lg-6">
                     <label><strong>Hotel Contact:</strong></label>
                     <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Contact} readOnly />
@@ -519,24 +502,38 @@ const Usermanage = () => {
                     <input
                       type="text"
                       className="form-control mt-2"
-                      value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
-                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
-                      onChange={(e) => setifsccodenumber(e.target.value)}
+                      value={pincode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode || ''}
+                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode !== ''}
+                      onChange={(e) => setPinCode(e.target.value)}
                     />
-                    {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
+                    {showerr && <div className='text-danger'>Error Invalid Pin code</div>}
                   </div>
                   </div>
                   <div className="row text-start">
-                  <div className="form-group col-md-12">
-                    <label><strong>Address:</strong></label>
+                  <div className="form-group col-lg-8">
+                    <label><strong>State:</strong></label>
                     <input
                       type="text"
                       className="form-control mt-2"
-                      value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
+                      value={City || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
                       readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
-                      onChange={(e) => setifsccodenumber(e.target.value)}
+                      onChange={(e) => setCity(e.target.value)}
                     />
-                    {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
+                    {showerr && <div className='text-danger'>Error Invalid City</div>}
+                  </div>
+                  </div>
+
+                  <div className="row text-start">
+                  <div className="form-group col-md-12">
+                    <label><strong>Address:</strong></label>
+                    <textarea
+                      type="text"
+                      className="form-control mt-2"
+                      value={Address || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address || ''}
+                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address !== ''}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                    {showerr && <div className='text-danger'>Error Invalid Addreess </div>}
                   </div>
                   </div>
 
@@ -555,6 +552,35 @@ const Usermanage = () => {
             </div>
           </motion.div>
         )}
+
+
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className="employee-table" style={{ backgroundColor: modalbg, color: textcolor, width: '100%', height: 'auto', marginTop: '20px', borderRadius: '6px' }}>
+              <div className="table-container" style={{ padding: '30px 0px' }} >
+                <DataTable
+                  title={<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Hotel List</span>}
+                  columns={columns}
+                  data={hotels}
+                  pagination
+                  paginationPerPage={10}
+                  striped
+                  responsive
+                  highlightOnHover
+                />
+
+              </div>
+            </motion.div>
+          </div>
+       
+
+        {/* add hotels */}
+
+       
+    </div>
+
       </Layout>
     </div>
   );

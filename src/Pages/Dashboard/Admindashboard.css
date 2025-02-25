@@ -72,7 +72,7 @@
   margin-left: 220px;
   /* Offset the content by the sidebar's width */
   padding: 20px;
-  overflow-y: auto;
+  overflow: auto;
   margin-top: 30px;
   /* Allow scrolling if the content overflows */
 }
@@ -299,7 +299,7 @@
 }
 
 .user-details-card button {
-  position: absolute;
+  /* position: absolute; */
   right: 8px;
   top: 8px;
 }

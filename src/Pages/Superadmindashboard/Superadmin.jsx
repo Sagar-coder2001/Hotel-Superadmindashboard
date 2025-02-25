@@ -7,15 +7,11 @@ import Admindashboard from '../Dashboard/Admindashboard';
 import { useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import Select from 'react-select/base';
 
 const Superadmin = () => {
-  // const location = useLocation();
-  // const { tokenid, username } = location.state || {};
-  // const [token, setToken] = useState(tokenid || '');
-  // const [user, setUsername] = useState(username || '');
   const [openModal, setOpenModal] = useState(false);
-  const [newuser, setNewuser] = useState('');
-  const [password, setPassword] = useState('');
   const [userExist, setUserExist] = useState(false);
   const [allUserdata, setAllUserdata] = useState([]);
   const [selectedRole, setSelectedRole] = useState('emp');
@@ -40,15 +36,17 @@ const Superadmin = () => {
 
   const navigate = useNavigate();
 
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
   // Handle adding a new user
-  const handleSubmit = async (e) => {
-    if (newuser === "" && password === "") {
+  const handleUserSubmit = async (data) => {
+    setUseraddloading(true);
+    const { newuser, password } = data;
+    if (!newuser || !password) {
       setshowerr(true);
-      return false;
-    } else {
-      setshowerr(false);
-      e.preventDefault();
-      setUseraddloading(true);
+      return;
+    }
+    else {
       const formData = new FormData();
       formData.append('username', username);
       formData.append('token', token);
@@ -74,12 +72,12 @@ const Superadmin = () => {
         if (data.Status === false) setUserExist(true);
         console.log(data);
         setOpenModal(false);
-        setNewuser('');
-        setPassword('');
+        // newuser('');
+        // password('');
         setSelectedRole('emp');
       } catch (error) {
         console.error('Error submitting data:', error);
-        alert('Error: ' + error.message);
+        // alert('Error: ' + error.message);
       }
     }
   };
@@ -153,15 +151,14 @@ const Superadmin = () => {
 
       const data = await response.json();
       console.log('User removed successfully:', data);
-      if(data.Status === true){
+      if (data.Status === true) {
         window.location.reload();
       }
       fetchData(selectedHotel_id);
     } catch (error) {
       console.error('Error submitting data:', error);
-      alert('Error: ' + error.message);
     }
-    finally{
+    finally {
       setUseraddloading(false)
     }
   };
@@ -224,7 +221,7 @@ const Superadmin = () => {
     },
     {
       name: <div className='heading'>Role</div>,
-      selector: row => <><div className='srno'>{row.Role }</div></>,
+      selector: row => <><div className='srno'>{row.Role}</div></>,
       sortable: true,
     },
     {
@@ -241,6 +238,8 @@ const Superadmin = () => {
       )
     }
   ];
+
+  console.log(hotels)
 
   return (
     <Layout>
@@ -272,16 +271,22 @@ const Superadmin = () => {
           <div className="addbtn" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button className="mt-4" onClick={addEmpUser}>Add User</button>
             <div className="row mt-4">
-             
               <label htmlFor="role" className="col-4 col-form-label text-start"><strong>Hotel-Id</strong></label>
               <div className="col-8">
-                <div>
-                <input type="text"
-                              placeholder='Search Hotels'
-                              style={{ marginBottom: '10px', boxShadow: '0px 0px 25px solid', outline: 'none', padding: '4px' }}
-                              onChange={handleSearchChange}
-                              className='form-control'
-                            />
+                <div className="dropdown">
+                  <input
+                    type="text"
+                    placeholder="Search Hotels"
+                    style={{
+                      marginBottom: '10px',
+                      boxShadow: '0px 0px 25px solid',
+                      outline: 'none',
+                      padding: '4px',
+                      width: '100%'
+                    }}
+                    onChange={handleSearchChange}
+                    className="form-control"
+                  />
                   <select
                     className="form-control"
                     value={selectedHotel_id}
@@ -291,19 +296,14 @@ const Superadmin = () => {
                       fetchData(newSelectedValue);
                     }}
                   >
-                 
-                    
                     {loading ? (
                       <option>Loading...</option>
                     ) : (
                       filteredHotels.length ? (
-                        
                         filteredHotels.map((hotel, index) => (
-                          <>
                           <option key={index} value={hotel.Hotel_ID}>
                             {hotel.Hotel_Name}
                           </option>
-                          </>
                         ))
                       ) : (
                         <option>No hotels found</option>
@@ -313,21 +313,24 @@ const Superadmin = () => {
                 </div>
               </div>
             </div>
+
           </div>
           {/* Modal for Adding User */}
           {openModal && (
             <motion.div
-            initial={{ opacity: 0}}
-            animate={{ opacity: 1}}
-            transition={{ duration: 0.6 }}
-            className="user-details-card text-center" style={{backgroundColor : modalbg, color:textcolor}}>
-              <form>
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="user-details-card text-center"
+              style={{ backgroundColor: modalbg, color: textcolor }}
+            >
+              <form onSubmit={handleSubmit(handleUserSubmit)}>
                 <h3>superadmin</h3>
                 <button
                   type="button"
                   className="btn btn-secondary"
                   onClick={() => setOpenModal(false)}
-                  style={{ border: 'none', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
+                  style={{ border: 'none', position: 'absolute', right: '0', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
                 >
                   &#10006;
                 </button>
@@ -338,81 +341,61 @@ const Superadmin = () => {
                     <input
                       type="text"
                       className="form-control"
-                      value={newuser}
-                      onChange={(e) => setNewuser(e.target.value)}
-                      required
+                      {...register('newuser', { required: 'Username is required' })}
                     />
+                    {errors.newuser && <span style={{ color: 'red' }}>{errors.newuser.message}</span>}
                   </div>
-                  {showerr &&
-                    <div>
-                      <span style={{ color: 'red', marginLeft: '10px', fontSize: '125px' }}>username is required</span>
-                    </div>
-                  }
                 </div>
                 <div className="row mt-4">
-                  <label htmlFor="contact" className="col-4 col-form-label text-start">Password</label>
+                  <label htmlFor="contact" className="col-4 col-form-label text-start">Password:</label>
                   <div className="col-8">
                     <input
                       type="text"
                       className="form-control"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
+                      {...register('password', { required: 'Password is required' })}
                     />
+                    {errors.password && <span style={{ color: 'red' }}>{errors.password.message}</span>}
                   </div>
-                  {showerr ?
-                    <div>
-                      <span style={{ color: 'red', marginLeft: '80px', fontSize: '125px' }}>password is required</span>
-                    </div>
-                    : ""
-                  }
                 </div>
                 <div className="row mt-4">
-                  <label htmlFor="role" className="col-4 col-form-label text-start">Role</label>
+                  <label htmlFor="role" className="col-4 col-form-label text-start">Role:</label>
                   <div className="col-8">
                     <select
                       className="form-control"
-                      value={selectedRole}
                       onChange={(e) => setSelectedRole(e.target.value)}
+                    // {...register('role', { required: 'Role is required' })}
                     >
                       <option value="emp">Employee</option>
                       <option value="admin">Admin</option>
                     </select>
+                    {errors.role && <span style={{ color: 'red' }}>{errors.role.message}</span>}
                   </div>
                 </div>
                 <div className="row mt-4">
-                  <label htmlFor="role" className="col-4 col-form-label text-start">Hotel-Id</label>
+                  <label htmlFor="hotel_id" className="col-4 col-form-label text-start">Hotel-Id:</label>
                   <div className="col-8">
                     <select
                       className="form-control"
-                      value={selectedHotel_id}
                       onChange={(e) => {
                         const newSelectedValue = e.target.value;
                         setSelectedHotel_Id(newSelectedValue);
                         fetchData(newSelectedValue);
                       }}
+                    // {...register('hotel_id', { required: 'Hotel is required' })}
                     >
-                      {loading ? (
-                        <option>Loading...</option>
-                      ) : (
-                        hotels.map((hotel, index) => (
-                          <option key={index} value={hotel.Hotel_ID}>
-                            {hotel.Hotel_Name}
-                          </option>
-                        ))
-                      )}
+                      {/* Map over hotels to create options */}
+                      {hotels.map((item) => (
+                        <option key={item.Hotel_ID} value={item.Hotel_ID}>
+                          {item.Hotel_ID} {/* You can display the hotel name here */}
+                        </option>
+                      ))}
                     </select>
+                    {errors.hotel_id && <span style={{ color: 'red' }}>{errors.hotel_id.message}</span>}
                   </div>
                 </div>
-                <hr />
-                <div className="input-group row mb-3">
-                  <span
-                    className="queuefetchbtn col-4 m-auto"
-                    style={{ margin: '0px 25px', borderRadius: '4px', cursor: 'pointer' }}
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </span>
+
+                <div className="row mt-4">
+                  <button type="submit" className="btn btn-primary">Add User</button>
                 </div>
               </form>
             </motion.div>
@@ -434,22 +417,22 @@ const Superadmin = () => {
             </div>
           )}
           {/* User List */}
-          <motion.div 
-            initial={{ opacity: 0 , y: -50 }}
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-          className="employee-table" style={{backgroundColor: modalbg, color: textcolor, width:'100%', height:'auto', marginTop:'20px', borderRadius:'6px'}}>
-          <div className="table-container" style={{padding:'25px 0px'}} >
-            <DataTable
-              title={<span style={{fontSize: '24px', fontWeight: 'bold' }}>Employee List</span>}
-              columns={columns}
-              data={allUserdata}
-              pagination           
-              paginationPerPage={10}    
-              striped
-              responsive
-              highlightOnHover
-            />
+            className="employee-table" style={{ backgroundColor: modalbg, color: textcolor, width: '100%', height: 'auto', marginTop: '20px', borderRadius: '6px' }}>
+            <div className="table-container" style={{ padding: '25px 0px' }} >
+              <DataTable
+                title={<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Employee List</span>}
+                columns={columns}
+                data={allUserdata}
+                pagination
+                paginationPerPage={10}
+                striped
+                responsive
+                highlightOnHover
+              />
             </div>
           </motion.div>
         </div>

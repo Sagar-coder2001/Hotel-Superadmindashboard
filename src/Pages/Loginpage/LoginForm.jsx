@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import './LoginForm.css'
+import './LoginForm.css';
 import Layout from '../../Components/Layout/Layout';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { userlogin } from '../../Features/Superslice';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
 
 const LoginForm = () => {
-    const [userdetails, setUserDetails] = useState({
-        username: '',
-        password: ''
-    });
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const [isDarkTheme, setIsDarkTheme] = useState(false);
-    const [showerror, setShowerr] = useState(false);
-
+    
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+        clearErrors
+    } = useForm();
 
     useEffect(() => {
         const storedTheme = localStorage.getItem('theme');
@@ -27,50 +29,39 @@ const LoginForm = () => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    //     if (isLoggedIn === 'true') {
-    //         localStorage.removeItem('isLoggedIn');
-    //         navigate('/');
-    //     }
-    // }, [navigate]);
-
-    const onchangetext = (e) => {
-        setUserDetails((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-    };
-
-    const submitDetails = async (e) => {
-        e.preventDefault();
-        // navigate('/Admindashboard');
+    const onSubmit = async (data) => {
         try {
             const formdata = new FormData();
-            formdata.append('username', userdetails.username);
-            formdata.append('password', userdetails.password);
+            formdata.append('username', data.username);
+            formdata.append('password', data.password);
 
             const response = await fetch('http://192.168.1.25/Queue/Super_Admin/log.php?do=login', {
                 method: 'POST',
                 body: formdata,
             });
-            const data = await response.json();
-            console.log(data);
 
-            if (data.Status === false) {
-                setShowerr(true);
+            const result = await response.json();
+
+            if (result.Status === false) {
+                setError("username", {
+                    type: "manual",
+                    message: "Invalid Username",
+                });
+                setError("password", {
+                    type: "manual",
+                    message: "Invalid Password",
+                });
             }
 
-            if (data.Status === true) {
+            if (result.Status === true) {
                 dispatch(userlogin({
-                    token: data.Token,
-                    username: userdetails.username,
-                    password: userdetails.password,
-
+                    token: result.Token,
+                    username: data.username,
+                    password: data.password,
                 }));
-                navigate('/Maindashboard', { state: { tokenid: data.Token, username: userdetails.username } });
-            }
 
+                navigate('/Maindashboard', { state: { tokenid: result.Token, username: data.username } });
+            }
         } catch (err) {
             console.log(err);
         }
@@ -84,63 +75,52 @@ const LoginForm = () => {
     return (
         <div>
             <Layout>
-
                 <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 1 }}
                     className={`login-container ${isDarkTheme ? 'dark' : 'light'}`}>
                     <div className="card-container">
-                        {
-                            // showerror ? (
-                            //     <>
-                            //         <div>
-                            //             <div className="showerror text-center">
-                            //                 <strong className='text-danger fs-2'>Error! </strong><span style={{ fontSize: '18px' }}>Invalid Username and Password</span>
-                            //                 <i class="fa-solid fa-xmark"onClick={() => setShowerr(false)} style={{marginLeft:'125px', fontSize:'225px', color:"red"}}></i> 
-                            //             </div>
-                            //         </div>
-                            //     </>
-                            // ) : ''
-                        }
-
-
-                        <form>
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <h4 className="text-center fs-2">Superadmin Login</h4>
                             <div className="mb-3">
                                 <label htmlFor="username" className="form-label">Username</label>
                                 <input
-                                    type="email"
+                                    type="text"
                                     className="form-control"
-                                    value={userdetails.username}
-                                    onChange={onchangetext}
                                     id="username"
-                                    name="username"
+                                    {...register('username', { required: "Username is required" })}
                                 />
-                                <span className='text-danger'>{showerror ? 'Invalid Username' : ''}</span>
+                                <span className='text-danger'>
+                                    {errors.username && errors.username.message}
+                                    {/* {showerror && 'Invalid Username'} */}
+                                </span>
                             </div>
+
                             <div className="mb-3" style={{ position: 'relative' }}>
                                 <label htmlFor="password" className="form-label">Password</label>
                                 <input
                                     type="password"
                                     className="form-control"
-                                    value={userdetails.password}
-                                    onChange={onchangetext}
-                                    name="password"
                                     id="password"
+                                    {...register('password', { required: "Password is required" })}
                                 />
-                                <i class="fa-solid fa-eye" style={{ position: 'absolute', cursor: 'pointer', top: '40px', right: '10px', color: 'black' }} onClick={() => { togglePass('password') }}></i>
-                                <span className='text-danger'>{showerror ? 'Invalid Password' : ''}</span>
+                                <i className="fa-solid fa-eye"
+                                    style={{ position: 'absolute', cursor: 'pointer', top: '40px', right: '10px', color: 'black' }}
+                                    onClick={() => { togglePass('password') }}
+                                ></i>
+                                <span className='text-danger'>
+                                    {errors.password && errors.password.message}
+                                    {/* {showerror && 'Invalid Username'} */}
+                                </span>
                             </div>
+
                             <div className="mb-3 form-check">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                                 <label htmlFor="form-check-label">Check me out</label>
                             </div>
-                            <button
-                                type="submit"
-                                className="btn mt-2"
-                                onClick={submitDetails}
-                            >
+
+                            <button type="submit" className="btn mt-2">
                                 <strong>Submit</strong>
                             </button>
                         </form>

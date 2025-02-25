@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 const Admindashboard = () => {
   const location = useLocation();
-  const { tokenid, username } = location.state || {};
+  const {tokenid, username } = location.state || {};
   const [openmoadl, setOpenModal] = useState(false);
   const [clickbar, setclickbar] = useState(false);
   const [opendelpop , setOpenDelPop] = useState(false);
