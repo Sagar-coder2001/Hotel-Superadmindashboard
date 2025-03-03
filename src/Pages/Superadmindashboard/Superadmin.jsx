@@ -41,7 +41,7 @@ const Superadmin = () => {
   // Handle adding a new user
   const handleUserSubmit = async (data) => {
     setUseraddloading(true);
-    const { newuser, password } = data;
+    const { newuser, password} = data;
     if (!newuser || !password) {
       setshowerr(true);
       return;
@@ -56,7 +56,7 @@ const Superadmin = () => {
       formData.append('hotel_id', selectedHotel_id);
 
       try {
-        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addUser', {
+        const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=addUser', {
           method: 'POST',
           body: formData,
         });
@@ -77,7 +77,6 @@ const Superadmin = () => {
         setSelectedRole('emp');
       } catch (error) {
         console.error('Error submitting data:', error);
-        // alert('Error: ' + error.message);
       }
     }
   };
@@ -90,7 +89,7 @@ const Superadmin = () => {
     formData.append('hotel_id', hotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getUser', {
+      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=getUser', {
         method: 'POST',
         body: formData,
       });
@@ -142,13 +141,11 @@ const Superadmin = () => {
     formData.append('hotel_id', selectedHotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=removeUser', {
+      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=removeUser', {
         method: 'POST',
         body: formData,
       });
-
       if (!response.ok) throw new Error('Failed to delete the user');
-
       const data = await response.json();
       console.log('User removed successfully:', data);
       if (data.Status === true) {
@@ -175,7 +172,7 @@ const Superadmin = () => {
         formData.append('token', token);
 
         try {
-          const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+          const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
             method: 'POST',
             body: formData,
           });
@@ -244,7 +241,7 @@ const Superadmin = () => {
   return (
     <Layout>
       <Admindashboard />
-      <div className="dashboard-container mt-25">
+      <div className="dashboard-container mt-19">
         {delpopbox && (
           <div className="delpopup">
             <div className="popup-content">
@@ -266,26 +263,21 @@ const Superadmin = () => {
             </>
           )
         }
-        
+
+
         <div className="employee-manage">
           <div className="addbtn" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button className="mt-4" onClick={addEmpUser}>Add User</button>
             <div className="row mt-4">
+
               <label htmlFor="role" className="col-4 col-form-label text-start"><strong>Hotel-Id</strong></label>
               <div className="col-8">
-                <div className="dropdown">
-                  <input
-                    type="text"
-                    placeholder="Search Hotels"
-                    style={{
-                      marginBottom: '10px',
-                      boxShadow: '0px 0px 25px solid',
-                      outline: 'none',
-                      padding: '4px',
-                      width: '100%'
-                    }}
+                <div>
+                  <input type="text"
+                    placeholder='Search Hotels'
+                    style={{ marginBottom: '10px', boxShadow: '0px 0px 19px solid', outline: 'none', padding: '4px' }}
                     onChange={handleSearchChange}
-                    className="form-control"
+                    className='form-control'
                   />
                   <select
                     className="form-control"
@@ -296,14 +288,19 @@ const Superadmin = () => {
                       fetchData(newSelectedValue);
                     }}
                   >
+
+
                     {loading ? (
                       <option>Loading...</option>
                     ) : (
                       filteredHotels.length ? (
+
                         filteredHotels.map((hotel, index) => (
-                          <option key={index} value={hotel.Hotel_ID}>
-                            {hotel.Hotel_Name}
-                          </option>
+                          <>
+                            <option key={index} value={hotel.Hotel_ID}>
+                              {hotel.Hotel_Name}
+                            </option>
+                          </>
                         ))
                       ) : (
                         <option>No hotels found</option>
@@ -313,7 +310,6 @@ const Superadmin = () => {
                 </div>
               </div>
             </div>
-
           </div>
           {/* Modal for Adding User */}
           {openModal && (
@@ -363,7 +359,7 @@ const Superadmin = () => {
                     <select
                       className="form-control"
                       onChange={(e) => setSelectedRole(e.target.value)}
-                    // {...register('role', { required: 'Role is required' })}
+                      // {...register('role', { required: 'Role is required' })}
                     >
                       <option value="emp">Employee</option>
                       <option value="admin">Admin</option>
@@ -381,7 +377,7 @@ const Superadmin = () => {
                         setSelectedHotel_Id(newSelectedValue);
                         fetchData(newSelectedValue);
                       }}
-                    // {...register('hotel_id', { required: 'Hotel is required' })}
+                      // {...register('hotel_id', { required: 'Hotel is required' })}
                     >
                       {/* Map over hotels to create options */}
                       {hotels.map((item) => (
@@ -422,7 +418,7 @@ const Superadmin = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
             className="employee-table" style={{ backgroundColor: modalbg, color: textcolor, width: '100%', height: 'auto', marginTop: '20px', borderRadius: '6px' }}>
-            <div className="table-container" style={{ padding: '25px 0px' }} >
+            <div className="table-container" style={{ padding: '19px 0px' }} >
               <DataTable
                 title={<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Employee List</span>}
                 columns={columns}

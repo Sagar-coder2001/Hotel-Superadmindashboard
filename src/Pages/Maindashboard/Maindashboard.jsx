@@ -19,7 +19,7 @@ useEffect(() => {
         formdata.append('username', username);
         formdata.append('token', token);
         
-        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/log.php?do=login', {
+        const response = await fetch('http://192.168.1.10/Queue/Super_Admin/log.php?do=login', {
             method: 'POST',
             body: formdata,
         });
@@ -39,7 +39,7 @@ submitDetails();
         <Layout>
         <Admindashboard />
         <div className="dashboard-container mt-5">
-            Main Dashboard
+        
         </div>
         </Layout>
     </div>

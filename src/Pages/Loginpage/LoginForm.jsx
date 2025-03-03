@@ -35,7 +35,7 @@ const LoginForm = () => {
             formdata.append('username', data.username);
             formdata.append('password', data.password);
 
-            const response = await fetch('http://192.168.1.25/Queue/Super_Admin/log.php?do=login', {
+            const response = await fetch('http://192.168.1.10/Queue/Super_Admin/log.php?do=login', {
                 method: 'POST',
                 body: formdata,
             });

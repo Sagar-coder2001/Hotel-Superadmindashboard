@@ -21,9 +21,9 @@ const Usermanage = () => {
   const [openadd, setopenadd] = useState(false)
   const [accountnumber, setaccountnumber] = useState(null)
   const [ifsccode, setifsccodenumber] = useState(null);
-  const [pincode , setPinCode] = useState('')
-  const [City , setCity] = useState('')
-  const [Address , setAddress] = useState('')
+  const [pincode, setPinCode] = useState('')
+  const [City, setCity] = useState('')
+  const [Address, setAddress] = useState('')
 
   const [useraddloading, setUseraddloading] = useState(false)
 
@@ -39,7 +39,7 @@ const Usermanage = () => {
       const formData = new FormData();
       formData.append('username', username);
       formData.append('token', token);
-      fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+      fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
         method: 'POST',
         body: formData,
       })
@@ -95,7 +95,7 @@ const Usermanage = () => {
       formData.append('hotel_contact', hotelcontact);
 
       try {
-        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
+        const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
           method: 'POST',
           body: formData,
         });
@@ -122,7 +122,7 @@ const Usermanage = () => {
 
   setTimeout(() => {
     setshowerr(false);
-  }, 25000);
+  }, 19000);
 
   setTimeout(() => {
     setopenadd(false);
@@ -154,7 +154,7 @@ const Usermanage = () => {
     formData.append('hotel_id', confirmdel);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=deleteHotelDetails', {
+      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=deleteHotelDetails', {
         method: 'POST',
         body: formData,
       });
@@ -177,31 +177,28 @@ const Usermanage = () => {
     }
   };
 
-
   // add Details of the user 
   const addDetails = async (e) => {
+    window.scrollTo(0,0);
 
     e.preventDefault();
-    // Validate the inputs to ensure no empty values
-    if (!accountnumber || !ifsccode) {
-      setshowerr(true);
-      return; // Prevent submission if any field is empty
-    }
+  
     setUseraddloading(true);
 
     const formData = new FormData();
-    formData.append('username', user);
+    formData.append('username', username);
     formData.append('token', token);
     formData.append('hotel_id', selectedHotel.Hotel_ID);
     formData.append('hotel_account', accountnumber);
     formData.append('hotel_ifsc', ifsccode);
     formData.append('hotel_pincode', pincode);
-    formData.append('hotel_ifsc', City);
-    formData.append('hotel_ifsc', Address);
-
+    formData.append('hotel_city', City);
+    formData.append('hotel_address', Address);
+    formData.append('lat', 232);
+    formData.append('long', 23443.4343);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
+      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
         method: 'POST',
         body: formData,
       });
@@ -229,6 +226,8 @@ const Usermanage = () => {
       setUseraddloading(false)
     }
   };
+
+
   const RemoveDetails = async (e) => {
     setUseraddloading(true);
     e.preventDefault();
@@ -238,7 +237,7 @@ const Usermanage = () => {
     formData.append('hotel_id', selectedHotel.Hotel_ID);
 
     try {
-      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=deleteHotelAccountDetails', {
+      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=deleteHotelAccountDetails', {
         method: 'POST',
         body: formData,
       });
@@ -321,13 +320,11 @@ const Usermanage = () => {
     },
   ];
 
-
-
   return (
     <div>
       <Layout>
         <Admindashboard />
-        <div className="dashboard-container mt-25">
+        <div className="dashboard-container mt-19">
           <div className="hotelnamecontainer mt-4">
             <h3>Hotel Details</h3>
 
@@ -366,192 +363,202 @@ const Usermanage = () => {
               <button className="mt-4 " onClick={addEmpUser}>Add Hotel</button>
             </div>
 
-
             {openmodel && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="user-details-card text-center" style={{ backgroundColor: modalbg, color: textcolor }}>
-            <form>
-              <h3>Add Hotel</h3>
-              {
-                showerr && (
-                  <>
-                    <div>
-                      <strong className='text-danger fs-4'>Error</strong> <span>Invalid Credentials</span>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                className="user-details-card text-center" style={{ backgroundColor: modalbg, color: textcolor }}>
+                <form>
+                  <h3>Add Hotel</h3>
+                  {
+                    showerr && (
+                      <>
+                        <div>
+                          <strong className='text-danger fs-4'>Error</strong> <span>Invalid Credentials</span>
+                        </div>
+                      </>
+                    )
+                  }
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setOpenModal(false)}
+                    style={{ border: 'none', position: 'absolute', right: '0', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
+                  >
+                    &#10006;
+                  </button>
+
+                  <div className="row mt-4">
+                    <label htmlFor="username" className="col-4 col-form-label text-start"><strong>Hotel Name</strong></label>
+                    <div className="col-8">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={hotelname}
+                        onChange={(e) => setHotelname(e.target.value)}
+                        required
+                      />
                     </div>
-                  </>
-                )
-              }
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setOpenModal(false)}
-                style={{ border: 'none', position:'absolute', right:'0', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
-              >
-                &#10006;
-              </button>
-
-              <div className="row mt-4">
-                <label htmlFor="username" className="col-4 col-form-label text-start"><strong>Hotel Name</strong></label>
-                <div className="col-8">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={hotelname}
-                    onChange={(e) => setHotelname(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="row mt-3">
-                <label htmlFor="contact" className="col-5 col-form-label text-start"><strong>Hotel Contact </strong></label>
-                <div className="col-7">
-                  <input
-                    type="text"
-                    className="form-control"
-                    maxLength={10}
-                    value={hotelcontact}
-                    onChange={(e) => setHotelContact(e.target.value)}
-                    required
-                  />
-                </div>
-
-              </div>
-
-              <div className="input-group row mt-3">
-                <span
-                  className="queuefetchbtn col-4 m-auto"
-                  style={{ margin: '0px 25px', borderRadius: '4px', cursor: 'pointer' }}
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </span>
-              </div>
-            </form>
-          </motion.div>
-        )}
-
-        {/* Modal Popup */}
-        {modalOpen && selectedHotel && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="modal-overlay" style={{ backgroundColor: modalbg, color: textcolor }}>
-            <div className="modal-content">
-              <h4 style={{ textAlign: 'center', marginBottom: '20px' }}>Hotel Details</h4>
-              <span className="close-btn" style={{ cursor: 'pointer' }} onClick={closeModal}>
-                &#10006;
-              </span>
-              <form>
-                <div className="row text-start" >
-                  <div className="form-group col-lg-6">
-                    <label><strong>Hotel Name:</strong></label>
-                    <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Name} readOnly />
                   </div>
-                  <div className="form-group col-lg-6">
-                    <label><strong>Hotel ID:</strong></label>
-                    <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_ID} readOnly />
-                  </div>
-                </div>
+                  <div className="row mt-3">
+                    <label htmlFor="contact" className="col-5 col-form-label text-start"><strong>Hotel Contact </strong></label>
+                    <div className="col-7">
+                      <input
+                        type="tel"
+                        className="form-control"
+                        maxLength={10}
+                        value={hotelcontact}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d*$/.test(value)) {
+                            setHotelContact(value);
+                          }
+                        }}
+                        required
+                      />
 
-                <div className="row text-start">
-                  <div className="form-group col-lg-6">
-                    <label><strong>Hotel Contact:</strong></label>
-                    <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Contact} readOnly />
-                  </div>
-                  <div className="form-group col-lg-6">
-                    <label><strong>Account Details Status:</strong></label>
-                    <input type="text"
-                      className="form-control mt-2"
-                      value={selectedHotel.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}
-                      readOnly />
-                  </div>
-                </div>
+                    </div>
 
-                <div className="row text-start">
-                  <div className="form-group col-md-12">
-                    <label><strong>Account Number:</strong></label>
-                    <input
-                      type="text"
-                      className="form-control mt-2"
-                      value={accountnumber || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number || ''}
-                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number !== ''}
-                      onChange={(e) => setaccountnumber(e.target.value)}
-                    />
-                    {showerr && <div className='text-danger'>Error Invalid Account Number</div>}
                   </div>
+
+                  <div className="input-group row mt-3">
+                    <span
+                      className="queuefetchbtn col-4 m-auto"
+                      style={{ margin: '0px 19px', borderRadius: '4px', cursor: 'pointer' }}
+                      onClick={handleSubmit}
+                    >
+                      Submit
+                    </span>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+
+            {/* Modal Popup */}
+            {modalOpen && selectedHotel && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                className="modal-overlay" style={{ backgroundColor: modalbg, color: textcolor }}>
+                <div className="modal-content">
+                  <h4 style={{ textAlign: 'center', marginBottom: '20px' }}>Hotel Details</h4>
+                  <span className="close-btn" style={{ cursor: 'pointer' }} onClick={closeModal}>
+                    &#10006;
+                  </span>
+                  <form>
+                    <div className="row text-start" >
+                      <div className="form-group col-lg-6">
+                        <label><strong>Hotel Name:</strong></label>
+                        <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Name}
+                        //  readOnly 
+                         />
+                      </div>
+                      <div className="form-group col-lg-6">
+                        <label><strong>Hotel ID:</strong></label>
+                        <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_ID} 
+                        // readOnly
+                         />
+                      </div>
+                    </div>
+
+                    <div className="row text-start">
+                      <div className="form-group col-lg-6">
+                        <label><strong>Hotel Contact:</strong></label>
+                        <input type="text" className="form-control mt-2" value={selectedHotel.Hotel_Contact} readOnly />
+                      </div>
+                      <div className="form-group col-lg-6">
+                        <label><strong>Account Details Status:</strong></label>
+                        <input type="text"
+                          className="form-control mt-2"
+                          value={selectedHotel.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}
+                          // readOnly 
+                          />
+                      </div>
+                    </div>
+
+                    <div className="row text-start">
+                      <div className="form-group col-md-12">
+                        <label><strong>Account Number:</strong></label>
+                        <input
+                          type="text"
+                          className="form-control mt-2"
+                          value={accountnumber || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number || ''}
+                          // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number !== ''}
+                          onChange={(e) => setaccountnumber(e.target.value)}
+                        />
+                        {showerr && <div className='text-danger'>Error Invalid Account Number</div>}
+                      </div>
                     </div>
                     <div className="row text-start">
-                  <div className="form-group col-lg-6">
-                    <label><strong>IFSC Code:</strong></label>
-                    <input
-                      type="text"
-                      className="form-control mt-2"
-                      value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
-                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
-                      onChange={(e) => setifsccodenumber(e.target.value)}
-                    />
-                    {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
-                  </div>
+                      <div className="form-group col-lg-6">
+                        <label><strong>IFSC Code:</strong></label>
+                        <input
+                          type="text"
+                          className="form-control mt-2"
+                          value={ifsccode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
+                          // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
+                          onChange={(e) => setifsccodenumber(e.target.value)}
+                        />
+                        {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
+                      </div>
 
-                  <div className="form-group col-lg-6">
-                    <label><strong>Pin Code:</strong></label>
-                    <input
-                      type="text"
-                      className="form-control mt-2"
-                      value={pincode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode || ''}
-                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode !== ''}
-                      onChange={(e) => setPinCode(e.target.value)}
-                    />
-                    {showerr && <div className='text-danger'>Error Invalid Pin code</div>}
-                  </div>
-                  </div>
-                  <div className="row text-start">
-                  <div className="form-group col-lg-8">
-                    <label><strong>State:</strong></label>
-                    <input
-                      type="text"
-                      className="form-control mt-2"
-                      value={City || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
-                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
-                      onChange={(e) => setCity(e.target.value)}
-                    />
-                    {showerr && <div className='text-danger'>Error Invalid City</div>}
-                  </div>
-                  </div>
+                      <div className="form-group col-lg-6">
+                        <label><strong>Pin Code:</strong></label>
+                        <input
+                          type="text"
+                          className="form-control mt-2"
+                          value={pincode || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode || ''}
+                          // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode !== ''}
+                          onChange={(e) => setPinCode(e.target.value)}
+                        />
+                        {showerr && <div className='text-danger'>Error Invalid Pin code</div>}
+                      </div>
+                    </div>
+                    <div className="row text-start">
+                      <div className="form-group col-lg-8">
+                        <label><strong>State:</strong></label>
+                        <input
+                          type="text"
+                          className="form-control mt-2"
+                          value={City || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code || ''}
+                          // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
+                          onChange={(e) => setCity(e.target.value)}
+                        />
+                        {showerr && <div className='text-danger'>Error Invalid City</div>}
+                      </div>
+                    </div>
 
-                  <div className="row text-start">
-                  <div className="form-group col-md-12">
-                    <label><strong>Address:</strong></label>
-                    <textarea
-                      type="text"
-                      className="form-control mt-2"
-                      value={Address || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address || ''}
-                      readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address !== ''}
-                      onChange={(e) => setAddress(e.target.value)}
-                    />
-                    {showerr && <div className='text-danger'>Error Invalid Addreess </div>}
-                  </div>
-                  </div>
+                    <div className="row text-start">
+                      <div className="form-group col-md-12">
+                        <label><strong>Address:</strong></label>
+                        <textarea
+                          type="text"
+                          className="form-control mt-2"
+                          value={Address || selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address || ''}
+                          // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address !== ''}
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                        {showerr && <div className='text-danger'>Error Invalid Addreess </div>}
+                      </div>
+                    </div>
 
-                  
 
-                <div className="form-group text-center">
-                  <button type="button" className="btn btn-primary" onClick={addDetails} style={{ marginRight: '10px' }}>
-                    Add Details
-                  </button>
-                  <button type="button" className="btn btn-danger" onClick={RemoveDetails}>
-                    Remove Details
-                  </button>
+
+                    <div className="form-group text-center">
+                      <button type="button" className="btn btn-primary" onClick={addDetails} style={{ marginRight: '10px' }}>
+                        Add Details
+                      </button>
+                      <button type="button" className="btn btn-danger" onClick={RemoveDetails}>
+                        Remove Details
+                      </button>
+                    </div>
+                  </form>
+
                 </div>
-              </form>
-
-            </div>
-          </motion.div>
-        )}
+              </motion.div>
+            )}
 
 
             <motion.div
@@ -574,12 +581,12 @@ const Usermanage = () => {
               </div>
             </motion.div>
           </div>
-       
 
-        {/* add hotels */}
 
-       
-    </div>
+          {/* add hotels */}
+
+
+        </div>
 
       </Layout>
     </div>
