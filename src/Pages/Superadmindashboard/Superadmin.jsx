@@ -26,7 +26,6 @@ const Superadmin = () => {
 
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-
   const bgcolor = useSelector((state) => state.theme.navbar)
   const textcolor = useSelector((state) => state.theme.textcolor);
   const modalbg = useSelector((state) => state.theme.modal);
@@ -41,11 +40,12 @@ const Superadmin = () => {
   // Handle adding a new user
   const handleUserSubmit = async (data) => {
     setUseraddloading(true);
-    const { newuser, password} = data;
+    const { newuser, password } = data;
     if (!newuser || !password) {
       setshowerr(true);
       return;
     }
+
     else {
       const formData = new FormData();
       formData.append('username', username);
@@ -56,7 +56,7 @@ const Superadmin = () => {
       formData.append('hotel_id', selectedHotel_id);
 
       try {
-        const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=addUser', {
+        const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addUser', {
           method: 'POST',
           body: formData,
         });
@@ -69,7 +69,9 @@ const Superadmin = () => {
           window.location.reload();
         }
 
-        if (data.Status === false) setUserExist(true);
+        if (data.Status === false)
+          setUserExist(true);
+        setUseraddloading(false);
         console.log(data);
         setOpenModal(false);
         // newuser('');
@@ -88,8 +90,9 @@ const Superadmin = () => {
     formData.append('token', token);
     formData.append('hotel_id', hotel_id);
 
+
     try {
-      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=getUser', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getUser', {
         method: 'POST',
         body: formData,
       });
@@ -98,10 +101,14 @@ const Superadmin = () => {
 
       const data = await response.json();
       setAllUserdata(data.User);
-      if (data.Status === false) setUserExist(true);
+      console.log(data)
+      if (data.Status === false) {
+        setUserExist(true);
+      }
+
     } catch (error) {
       console.error('Error fetching data:', error);
-      alert('Error: ' + error.message);
+      // alert('Error: ' + error.message);
     } finally {
       setLoadingUsers(false);
     }
@@ -113,7 +120,6 @@ const Superadmin = () => {
       fetchData(selectedHotel_id);
     }
   }, []);
-
 
 
   const userlogoutpopbox = (delete_user) => {
@@ -141,7 +147,7 @@ const Superadmin = () => {
     formData.append('hotel_id', selectedHotel_id);
 
     try {
-      const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=removeUser', {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=removeUser', {
         method: 'POST',
         body: formData,
       });
@@ -172,7 +178,7 @@ const Superadmin = () => {
         formData.append('token', token);
 
         try {
-          const response = await fetch('http://192.168.1.10/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
+          const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=getHotelDetails', {
             method: 'POST',
             body: formData,
           });
@@ -202,9 +208,6 @@ const Superadmin = () => {
     setFilteredHotels(filtered);
   };
 
-
-
-
   const columns = [
     {
       name: <div className='heading'>Sr. No</div>,
@@ -223,20 +226,32 @@ const Superadmin = () => {
     },
     {
       name: <div className='heading'>Action</div>,
-      button: true,
-      cell: row => (
-        <span
-          className="data-bs-toggle srno"
-          data-bs-target="#exampleModal"
-          onClick={() => userlogoutpopbox(row.Username)}
-        >
-          <i className="fa-solid fa-trash text-danger"></i>
-        </span>
-      )
-    }
+      cell: (row) => (
+        <div style={{ display: 'flex', justifyContent: 'space-around', cursor: 'pointer' }}>
+          {/* Delete Icon */}
+          <span
+            className="data-bs-toggle srno"
+            data-bs-target="#exampleModal"
+            onClick={() => userlogoutpopbox(row.Username)} // Function for delete
+            style={{ marginRight: '20px' }}
+          >
+            <button className='btn btn-danger'>Delete</button>
+          </span>
+
+          {/* Edit Icon */}
+          <span
+            className="data-bs-toggle srno"
+            data-bs-target="#exampleModal"
+            onClick={addEmpUser} // Function for edit
+          >
+            <button className='btn btn-warning'>Edit</button>
+          </span>
+        </div>
+      ),
+    },
   ];
 
-  console.log(hotels)
+  console.log(hotels);
 
   return (
     <Layout>
@@ -264,10 +279,42 @@ const Superadmin = () => {
           )
         }
 
+        {
+          userExist && (
+            <>
+              <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert">
+                <strong>Error!</strong> User already Exist.
+                <button type="button" class=" close mx-5 p-1 " data-dismiss="alert" aria-label="Close"
+                onClick={() => setUserExist(false)} >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </>
+          )
+        }
+
+        {/*
+         {userExist && (
+          <div className="user-details-card">
+            <div className="card" style={{ padding: '10px', marginTop: '20px' }}>
+              Username already exists
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setUserExist(false)}
+              style={{ top: '0', right: '0', border: 'none', background: 'none', fontSize: '1rem', color: 'red', cursor: 'pointer', outline: 'none' }}
+            >
+              &#10006;
+            </button>
+          </div>
+        )} 
+         */}
 
         <div className="employee-manage">
           <div className="addbtn" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button className="mt-4" onClick={addEmpUser}>Add User</button>
+
             <div className="row mt-4">
 
               <label htmlFor="role" className="col-4 col-form-label text-start"><strong>Hotel-Id</strong></label>
@@ -288,7 +335,6 @@ const Superadmin = () => {
                       fetchData(newSelectedValue);
                     }}
                   >
-
 
                     {loading ? (
                       <option>Loading...</option>
@@ -359,7 +405,7 @@ const Superadmin = () => {
                     <select
                       className="form-control"
                       onChange={(e) => setSelectedRole(e.target.value)}
-                      // {...register('role', { required: 'Role is required' })}
+                    // {...register('role', { required: 'Role is required' })}
                     >
                       <option value="emp">Employee</option>
                       <option value="admin">Admin</option>
@@ -377,7 +423,7 @@ const Superadmin = () => {
                         setSelectedHotel_Id(newSelectedValue);
                         fetchData(newSelectedValue);
                       }}
-                      // {...register('hotel_id', { required: 'Hotel is required' })}
+                    // {...register('hotel_id', { required: 'Hotel is required' })}
                     >
                       {/* Map over hotels to create options */}
                       {hotels.map((item) => (
@@ -397,22 +443,9 @@ const Superadmin = () => {
             </motion.div>
           )}
           {/* User Exists Error Message */}
-          {userExist && (
-            <div className="user-details-card">
-              <div className="card" style={{ padding: '10px', marginTop: '20px' }}>
-                Username already exists
-              </div>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setUserExist(false)}
-                style={{ top: '0', right: '0', border: 'none', background: 'none', fontSize: '1rem', color: 'red', cursor: 'pointer', outline: 'none' }}
-              >
-                &#10006;
-              </button>
-            </div>
-          )}
+
           {/* User List */}
+
           <motion.div
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}

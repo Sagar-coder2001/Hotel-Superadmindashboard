@@ -49,5 +49,13 @@ select{
     border: none;
     outline: none;
     border-radius: 5px;
-    box-shadow: 0px 0px 4px;
+    border: 1px solid;
+    padding: 8px;
+}
+.select{
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid;
+    padding: 8px;
 }

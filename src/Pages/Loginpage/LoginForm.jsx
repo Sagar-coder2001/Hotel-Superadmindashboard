@@ -35,11 +35,10 @@ const LoginForm = () => {
             formdata.append('username', data.username);
             formdata.append('password', data.password);
 
-            const response = await fetch('http://192.168.1.10/Queue/Super_Admin/log.php?do=login', {
+            const response = await fetch('http://192.168.1.25/Queue/Super_Admin/log.php?do=login', {
                 method: 'POST',
                 body: formdata,
             });
-
             const result = await response.json();
 
             if (result.Status === false) {
@@ -76,7 +75,7 @@ const LoginForm = () => {
         <div>
             <Layout>
                 <motion.div
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -15 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 1 }}
                     className={`login-container ${isDarkTheme ? 'dark' : 'light'}`}>
@@ -106,7 +105,7 @@ const LoginForm = () => {
                                     {...register('password', { required: "Password is required" })}
                                 />
                                 <i className="fa-solid fa-eye"
-                                    style={{ position: 'absolute', cursor: 'pointer', top: '40px', right: '10px', color: 'black' }}
+                                    style={{ position: 'absolute', cursor: 'pointer', top: '40px', right: '15px', color: 'black' }}
                                     onClick={() => { togglePass('password') }}
                                 ></i>
                                 <span className='text-danger'>
