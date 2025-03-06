@@ -23,15 +23,13 @@ const Superadmin = () => {
   const [confirmdel, setconfirmdel] = useState(false);
   const [useraddloading, setUseraddloading] = useState(false);
   const [showerr, setshowerr] = useState(false);
-
+  const [openreset, setOpenreset] = useState('')
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const bgcolor = useSelector((state) => state.theme.navbar)
   const textcolor = useSelector((state) => state.theme.textcolor);
   const modalbg = useSelector((state) => state.theme.modal);
   const { isLoggedIn, token, username } = useSelector((state) => state.loggedin);
-
-
 
   const navigate = useNavigate();
 
@@ -79,6 +77,9 @@ const Superadmin = () => {
         setSelectedRole('emp');
       } catch (error) {
         console.error('Error submitting data:', error);
+      }
+      finally{
+        setUseraddloading(false)
       }
     }
   };
@@ -170,6 +171,27 @@ const Superadmin = () => {
     setOpenModal(true);
   };
 
+  const resetuser = async (newuser, password, selectedRole) => {
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('token', token);
+    formData.append('new_user', newuser);
+    formData.append('password', password);
+    formData.append('role', selectedRole);
+    formData.append('hotel_id', selectedHotel_id);
+    
+    try {
+      const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=updateUser', {
+        method: 'POST',
+        body: formData,
+      });
+      console.log(response);
+
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+
+  }
   useEffect(() => {
     const fetchHotels = async () => {
       if (username && token) {
@@ -194,9 +216,9 @@ const Superadmin = () => {
         }
       }
     };
-
     fetchHotels();
   }, [username, token]);
+
 
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
@@ -210,8 +232,8 @@ const Superadmin = () => {
 
   const columns = [
     {
-      name: <div className='heading'>Sr. No</div>,
-      selector: (row, index) => <><div className='srno'>{index + 1}</div></>,
+      name: <div className='heading text-center'>Sr. No</div>,
+      selector: (row, index) => <><div className='srno text-center'> {index + 1} </div></>,
       sortable: true,
     },
     {
@@ -242,7 +264,7 @@ const Superadmin = () => {
           <span
             className="data-bs-toggle srno"
             data-bs-target="#exampleModal"
-            onClick={addEmpUser} // Function for edit
+            onClick={() => setOpenreset(true)} // Function for edit
           >
             <button className='btn btn-warning'>Edit</button>
           </span>
@@ -284,8 +306,8 @@ const Superadmin = () => {
             <>
               <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert">
                 <strong>Error!</strong> User already Exist.
-                <button type="button" class=" close mx-5 p-1 " data-dismiss="alert" aria-label="Close"
-                onClick={() => setUserExist(false)} >
+                <button type="button" class=" close mx-5 p-1 border-0" data-dismiss="alert" aria-label="Close"
+                  onClick={() => setUserExist(false)} >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
@@ -309,7 +331,93 @@ const Superadmin = () => {
             </button>
           </div>
         )} 
-         */}
+        */}
+
+        {/* reset the user */}
+        {
+          openreset && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                className="user-details-card text-center"
+                style={{ backgroundColor: modalbg, color: textcolor }}
+              >
+                <form>
+                  <h3>Reset user</h3>
+                  <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setOpenModal(false)}
+                  style={{ border: 'none', position: 'absolute', right: '0', background: 'none', fontSize: '1.2rem', color: 'red', cursor: 'pointer', outline: 'none' }}
+                >
+                  &#10006;
+                </button>
+                  {/* User form inputs */}
+                  <div className="row mt-4">
+                    <label htmlFor="username" className="col-4 col-form-label text-start">Username:</label>
+                    <div className="col-8">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={'rahul'}
+                      />
+                    </div>
+                  </div>
+                  <div className="row mt-4">
+                    <label htmlFor="contact" className="col-4 col-form-label text-start">Password:</label>
+                    <div className="col-8">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={'rahul'}
+                      />
+                    </div>
+                  </div>
+                  <div className="row mt-4">
+                    <label htmlFor="role" className="col-4 col-form-label text-start">Role:</label>
+                    <div className="col-8">
+                      <select
+                        className="form-control"
+
+                      >
+                        <option value="emp">Employee</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="row mt-4">
+                    <label htmlFor="hotel_id" className="col-4 col-form-label text-start">Hotel-Id:</label>
+                    <div className="col-8">
+                      <select
+                        className="form-control"
+                        onChange={(e) => {
+                          const newSelectedValue = e.target.value;
+                          setSelectedHotel_Id(newSelectedValue);
+                          fetchData(newSelectedValue);
+                        }}
+                      // {...register('hotel_id', { required: 'Hotel is required' })}
+                      >
+                        {/* Map over hotels to create options */}
+                        {hotels.map((item) => (
+                          <option key={item.Hotel_ID} value={item.Hotel_ID}>
+                            {item.Hotel_ID} {/* You can display the hotel name here */}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.hotel_id && <span style={{ color: 'red' }}>{errors.hotel_id.message}</span>}
+                    </div>
+                  </div>
+
+                  <div className="row mt-4">
+                    <button type="submit" className="btn btn-primary" onClick={() => resetuser()}>Reset User</button>
+                  </div>
+                </form>
+              </motion.div>
+            </>
+          )
+        }
 
         <div className="employee-manage">
           <div className="addbtn" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -335,7 +443,6 @@ const Superadmin = () => {
                       fetchData(newSelectedValue);
                     }}
                   >
-
                     {loading ? (
                       <option>Loading...</option>
                     ) : (
@@ -443,6 +550,9 @@ const Superadmin = () => {
             </motion.div>
           )}
           {/* User Exists Error Message */}
+
+
+
 
           {/* User List */}
 

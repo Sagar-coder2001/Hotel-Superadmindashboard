@@ -35,6 +35,16 @@ const Usermanage = () => {
     Address: ''
   })
 
+  const [resetdetails, setHotelResetdetails] = useState({
+    hotelname: '',
+    hotelcontact: '',
+    accountnumber: '',
+    ifsccode: '',
+    pincode: '',
+    City: '',
+    Address: ''
+  })
+
   const [useraddloading, setUseraddloading] = useState(false)
 
   const bgcolor = useSelector((state) => state.theme.navbar)
@@ -95,6 +105,15 @@ const Usermanage = () => {
     // }
   }
 
+  const hotelresetchange = (e) => {
+    const { name, value } = e.target;
+    setHotelResetdetails({ ...resetdetails, [name]: value });
+
+    // if (value.trim() !== '') {
+    //   setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+    // }
+  }
+
 
   // add hotel details
   const handleSubmit = async (e) => {
@@ -111,14 +130,14 @@ const Usermanage = () => {
       formData.append('token', token);
       formData.append('hotel_name', hotelsetails.hotelname);
       formData.append('hotel_contact', hotelsetails.hotelcontact);
-      formData.append('hotel_id', selectedHotel.Hotel_ID);
-      formData.append('hotel_account', hotelsetails.accountnumber);
-      formData.append('hotel_ifsc', hotelsetails.ifsccode);
+      // formData.append('hotel_id', selectedHotel.Hotel_ID);
+      formData.append('hotel_account_number', hotelsetails.accountnumber);
+      formData.append('hotel_ifsc_code', hotelsetails.ifsccode);
       formData.append('hotel_pincode', hotelsetails.pincode);
-      formData.append('hotel_city', hotelsetails.City);
+      formData.append('hotel_state', hotelsetails.City);
       formData.append('hotel_address', hotelsetails.Address);
-      formData.append('lat', 232);
-      formData.append('long', 23443.4343);
+      // formData.append('lat', 232);
+      // formData.append('long', 23443.4343);
 
       try {
         const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelDetails', {
@@ -134,8 +153,8 @@ const Usermanage = () => {
         if (data.Status === false);
         console.log(data);
         setOpenModal(false);
-        setHotelname('');
-        setHotelContact('');
+        // setHotelname('');
+        // setHotelContact('');
       } catch (error) {
         console.error('Error submitting data:', error);
         alert('Error: ' + error.message);
@@ -171,7 +190,6 @@ const Usermanage = () => {
     setconfirmdel(null);
   };
 
-
   const userlogout = async (confirmdel) => {
     setUseraddloading(true)
     const formData = new FormData();
@@ -204,24 +222,24 @@ const Usermanage = () => {
   };
 
   // edit the hotel Details of the 
-  const addDetails = async (e) => {
+  const resethoteldetails = async (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
 
     setUseraddloading(true);
 
     const formData = new FormData();
     formData.append('username', username);
     formData.append('token', token);
-    formData.append('hotel_id', selectedHotel.Hotel_ID);
-    formData.append('hotel_account', accountnumber);
-    formData.append('hotel_ifsc', ifsccode);
-    formData.append('hotel_pincode', pincode);
-    formData.append('hotel_city', City);
-    formData.append('hotel_address', Address);
-    formData.append('lat', 232);
-    formData.append('long', 23443.4343);
+    formData.append('hotel_name', hotelresetchange.hotelname);
+      formData.append('hotel_contact', hotelresetchange.hotelcontact);
+      formData.append('hotel_account', hotelresetchange.accountnumber);
+      formData.append('hotel_ifsc', hotelresetchange.ifsccode);
+      formData.append('hotel_pincode', hotelresetchange.pincode);
+      formData.append('hotel_city', hotelresetchange.City);
+      formData.append('hotel_address', hotelresetchange.Address);
+      formData.append('lat', 232);
+      formData.append('long', 23443.4343);
 
     try {
       const response = await fetch('http://192.168.1.25/Queue/Super_Admin/hotel.php?for=addHotelAccountDetails', {
@@ -314,11 +332,11 @@ const Usermanage = () => {
       selector: row => <><div className='srno'>{row.Hotel_Contact}</div></>,
       sortable: true,
     },
-    {
-      name: <div className='heading'>Account Details Status</div>,
-      selector: row => <><div className='srno'>{row.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}</div></>,
-      sortable: true,
-    },
+    // {
+    //   name: <div className='heading'>Account Details Status</div>,
+    //   selector: row => <><div className='srno'>{row.Hotel_Account_Details_Status ? 'Active' : 'Inactive'}</div></>,
+    //   sortable: true,
+    // },
     {
       name: <div className='heading'>Action</div>,
       cell: (row) => (
@@ -414,13 +432,16 @@ const Usermanage = () => {
                         {showerr && <div className='text-danger'>Error Invalid Hotel name</div>}
                       </div>
                       <div className="form-group col-lg-5 mt-3">
-                        <label><strong>Hotel ID:</strong></label>
-                        <input type="text" className="form-control mt-2" value={'selectedHotel.Hotel_ID'}
+                        <label><strong>Hotel Contact:</strong></label>
+                        <input type="text" className="form-control mt-2" name='hotelcontact'
+                          value={hotelsetails.hotelcontact}
+                          onChange={hotelchange}
                         />
+                        {showerr && <div className='text-danger'>Error Invalid Contact Number</div>}
                       </div>
                     </div>
 
-                    <div className="row text-start">
+                    {/* <div className="row text-start">
                       <div className="form-group col-lg-6 mt-3">
                         <label><strong>Hotel Contact:</strong></label>
                         <input type="text" className="form-control mt-2" name='hotelcontact'
@@ -437,7 +458,7 @@ const Usermanage = () => {
 
                         />
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="row text-start">
                       <div className="form-group col-md-11  mt-3">
@@ -534,28 +555,38 @@ const Usermanage = () => {
                 transition={{ duration: 0.6 }}
                 className="modal-overlay" style={{ backgroundColor: modalbg, color: textcolor }}>
                 <div className="modal-content">
-                  <h4 style={{ textAlign: 'center', marginBottom: '20px' }}>Hotel Details</h4>
+                  <h4 style={{ textAlign: 'center', marginBottom: '20px' }}>Reset Details</h4>
 
                   <form>
                     <div className="row text-start" >
                       <div className="form-group col-lg-6">
                         <label><strong>Hotel Name:</strong></label>
-                        <input type="text" className="form-control mt-2" value={'selectedHotel.Hotel_Name'}
+                        <input type="text" className="form-control mt-2" name='hotelname' onChange={hotelresetchange} value={selectedHotel.Hotel_Name}
                         //  readOnly 
                         />
+                        {
+                          console.log(selectedHotel)
+                        }
                       </div>
-                      <div className="form-group col-lg-6">
-                        <label><strong>Hotel ID:</strong></label>
-                        <input type="text" className="form-control mt-2" value={'selectedHotel.Hotel_ID'}
-                        // readOnly
+                      <div className="form-group col-lg-5">
+                        <label><strong>Hotel Contact:</strong></label>
+                        <input type="text" className="form-control mt-2" name='hotelcontact' onChange={hotelresetchange} value={selectedHotel.Hotel_Contact} readOnly />
+                      </div>
+                      {/* <div className="form-group col-lg-6">
+                        <label><strong>Account Details Status:</strong></label>
+                        <input type="text"
+                          className="form-control mt-2"
+                          value={'selectedHotel.Hotel_Account_Details_Status'}
+                        // readOnly 
+                        onChange={hotelchange}
                         />
-                      </div>
+                      </div> */}
                     </div>
 
-                    <div className="row text-start">
+                    {/* <div className="row text-start">
                       <div className="form-group col-lg-6">
                         <label><strong>Hotel Contact:</strong></label>
-                        <input type="text" className="form-control mt-2" value={'selectedHotel.Hotel_Contact'} readOnly />
+                        <input type="text" className="form-control mt-2" name='hotelcontact' onChange={hotelchange} value={selectedHotel.Hotel_Contact} readOnly />
                       </div>
                       <div className="form-group col-lg-6">
                         <label><strong>Account Details Status:</strong></label>
@@ -563,9 +594,10 @@ const Usermanage = () => {
                           className="form-control mt-2"
                           value={'selectedHotel.Hotel_Account_Details_Status'}
                         // readOnly 
+                        onChange={hotelchange}
                         />
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="row text-start">
                       <div className="form-group col-md-12">
@@ -573,9 +605,10 @@ const Usermanage = () => {
                         <input
                           type="text"
                           className="form-control mt-2"
-                          value={'selectedHotel.Hotel_Account_Details.Account_Number'}
+                          value={selectedHotel.Hotel_Account_Details.Account_Number}
+                          onChange={hotelresetchange}
+                          name='accountnumber'
                         // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Account_Number !== ''}
-
                         />
                         {showerr && <div className='text-danger'>Error Invalid Account Number</div>}
                       </div>
@@ -586,7 +619,9 @@ const Usermanage = () => {
                         <input
                           type="text"
                           className="form-control mt-2"
-                          value={'selectedHotel.Hotel_Account_Details.IFSC_Code'}
+                          name='ifsccode'
+                          value={selectedHotel.Hotel_Account_Details.IFSC_Code}
+                          onChange={hotelresetchange}
                         // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.IFSC_Code !== ''}
                         />
                         {showerr && <div className='text-danger'>Error Invalid IFSC Number</div>}
@@ -597,7 +632,9 @@ const Usermanage = () => {
                         <input
                           type="text"
                           className="form-control mt-2"
-                          value={'selectedHotel.Hotel_Account_Details.pincode'}
+                          name='pincode'
+                          value={selectedHotel.Hotel_Pincode}
+                          onChange={hotelresetchange}
                         // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.pincode !== ''}
                         />
                         {showerr && <div className='text-danger'>Error Invalid Pin code</div>}
@@ -607,9 +644,10 @@ const Usermanage = () => {
                       <div className="form-group col-lg-8">
                         <label><strong>State:</strong></label>
                         <select
-                          className="form-control mt-2"
-                          value={'selectedState'}
-                          // onChange={handleStateChange}
+                          className="form-control mt-2 select"
+                          value={selectedHotel.Hotel_State}
+                          name='City'
+                          onChange={hotelresetchange}
                         >
                           <option value="">Select a State</option> {/* Placeholder option */}
                           {states.map((state, index) => (
@@ -619,27 +657,27 @@ const Usermanage = () => {
                         {showerr && <div className="text-danger">Please select a valid state.</div>}
                       </div>
                     </div>
-
+                    
                     <div className="row text-start">
                       <div className="form-group col-md-12">
                         <label><strong>Address:</strong></label>
                         <textarea
                           type="text"
+                          name='Address'
                           className="form-control mt-2"
-                          value={'selectedHotel.Hotel_Account_Details.Address'}
+                          onChange={hotelresetchange}
+                          value={selectedHotel.Hotel_Address}
                         // readOnly={selectedHotel.Hotel_Account_Details_Status && selectedHotel.Hotel_Account_Details.Address !== ''}
                         />
                         {showerr && <div className='text-danger'>Error Invalid Addreess </div>}
                       </div>
                     </div>
 
-
-
                     <div className="form-group text-center">
-                      <button type="button" className="btn btn-primary" onClick={addDetails} style={{ marginRight: '10px' }}>
-                        Add Details
+                      <button type="button" className="btn btn-primary" onClick={resethoteldetails} style={{ marginRight: '10px' }}>
+                        Reset Details
                       </button>
-                      <button type="button" className="btn btn-danger" onClick={RemoveDetails}>
+                      <button type="button" className="btn btn-danger" onClick={() => setOpenModal(false)}>
                         Remove Details
                       </button>
                     </div>
@@ -656,6 +694,7 @@ const Usermanage = () => {
               className="employee-table" style={{ backgroundColor: modalbg, color: textcolor, width: '100%', height: 'auto', marginTop: '20px', borderRadius: '6px' }}>
               <div className="table-container" style={{ padding: '30px 0px' }} >
 
+
                 <DataTable
                   title={<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Hotel List</span>}
                   columns={columns}
@@ -667,13 +706,13 @@ const Usermanage = () => {
                   highlightOnHover
                 />
 
+
               </div>
             </motion.div>
           </div>
 
 
           {/* add hotels */}
-
 
         </div>
 

@@ -6,9 +6,11 @@ import zeallogo from '../../assets/Zeal_Logo_2.png'
 
 const Navbar = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(false);
+    const [changeicon, setChangeicon] = useState(false)
 
     const bgcolor = useSelector((state) => state.theme.navbar);
     const textcolor = useSelector((state) => state.theme.textcolor);
+
 
     const dispatch = useDispatch()
 

@@ -87,7 +87,6 @@ const Maindashboard = () => {
             <div className='border border-primary mb-5'>
 
               <LineChart width={500} height={300} data={data}>
-                {/* <CartesianGrid strokeDasharray="3 3" /> */}
                 <XAxis dataKey="x" />
                 <YAxis />
                 <Tooltip />
